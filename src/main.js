@@ -1,7 +1,7 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { IsFolderThere } from './LoadSongs.js';
+import { checkMusicFolder, openFolderDialog } from './backend/LoadFolder.ts';
 
 if (started) app.quit();
 
@@ -11,19 +11,17 @@ const createWindow = () => {
     resizable: true,
     frame: true,
     webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
   //checks if dev or production
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
-  }
-
-  let foldercheck = IsFolderThere();
-  if (!foldercheck) {
-    console.log('CHOOSE A FOLDER');
   }
 
   return mainWindow;
@@ -39,3 +37,6 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
+
+ipcMain.handle('check-folder', () => checkMusicFolder());
+ipcMain.handle('open-folder-dialog', () => openFolderDialog());

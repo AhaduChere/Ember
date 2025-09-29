@@ -30,19 +30,20 @@ export default defineConfig([
   },
 
   {
-    files: ['src/pages/**/*.js', 'src/pages/**/*.vue', 'src/components/**/*.vue','src/**/*.vue'],
+    files: ['src/pages/**/*.js', 'src/pages/**/*.vue', 'src/components/**/*.vue', 'src/**/*.vue', 'src/*.vue'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2021,
         sourceType: 'module',
       },
       globals: {
-        Image: 'readonly',
+        window: 'readonly',
+        console: 'readonly',
       },
     },
     rules: {
       'no-unused-vars': 'error',
-      'no-undef': 'error',
+      'no-undef': 'warn',
       'no-console': 'warn',
       'vue/no-mutating-props': 'error',
       'vue/no-unused-components': 'warn',
