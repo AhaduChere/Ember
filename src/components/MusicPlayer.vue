@@ -31,14 +31,14 @@
           draggable="false"
           :src="skipPreviousIcon"
           alt="PreviousButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:animate-bounce-down-up object-contain select-none mr-2"
+          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:mt-[0.5px] object-contain select-none mr-2"
           style="pointer-events: auto" />
 
         <img
           draggable="false"
           :src="currentPlayIcon"
           alt="PlaybackButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:mt-0.5 object-contain select-none"
+          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:mt-[0.5px] object-contain select-none"
           style="pointer-events: auto"
           @click="togglePlayback" />
 
@@ -46,7 +46,7 @@
           draggable="false"
           :src="skipNextIcon"
           alt="SkipButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:animate-bounce-down-up object-contain select-none ml-2"
+          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:mt-[0.5px] object-contain select-none ml-2"
           style="pointer-events: auto" />
 
         <img
@@ -105,23 +105,3 @@ const toggleLoop = () => {
   }
 };
 </script>
-
-<style>
-@keyframes bounce-down-up {
-  0% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(1px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.active\:animate-bounce-down-up:active {
-  animation: bounce-down-up 0.1s ease;
-}
-</style>

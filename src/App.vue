@@ -8,10 +8,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted } from 'vue';
 const folderOk = ref(true);
 
-onMounted(async () => {
+onBeforeMount(async () => {
   folderOk.value = await window.electronAPI.checkFolder();
+});
+
+onMounted(() => {
+  if (!folderOk.value) {
+    console.log('doing');
+  } else {
+    console.log('Not doing');
+  }
 });
 </script>

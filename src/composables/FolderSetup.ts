@@ -4,8 +4,7 @@ import fs from 'fs';
 export function checkMusicFolder(): boolean {
   try {
     const musicPath = app.getPath('music');
-    // return fs.existsSync(musicPath);
-    return false;
+    return fs.existsSync(musicPath);
   } catch {
     return false;
   }
