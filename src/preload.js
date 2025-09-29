@@ -1,4 +1,5 @@
 import { webFrame } from 'electron';
+import { IsFolderThere } from './LoadSongs.js';
 
 webFrame.setZoomFactor(1);
 
@@ -9,5 +10,11 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+const foldercheck = IsFolderThere();
+
+if (!foldercheck) {
+  // eslint-disable-next-line no-console
+  console.log('CHOOSE A FOLDER');
+}
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts

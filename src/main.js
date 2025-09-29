@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import { IsFolderThere } from './LoadSongs.js';
 
 if (started) app.quit();
 
@@ -8,16 +9,21 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     fullscreen: false,
     resizable: true,
-    frame: false,
+    frame: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
+  //checks if dev or production
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+  }
+
+  let foldercheck = IsFolderThere();
+  if (!foldercheck) {
+    console.log('CHOOSE A FOLDER');
   }
 
   return mainWindow;

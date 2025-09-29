@@ -38,7 +38,7 @@
           draggable="false"
           :src="currentPlayIcon"
           alt="PlaybackButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:animate-bounce-down-up object-contain select-none"
+          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] active:mt-0.5 object-contain select-none"
           style="pointer-events: auto"
           @click="togglePlayback" />
 
@@ -63,7 +63,7 @@
 
 <script setup>
 import VueSlider from 'vue-3-slider-component';
-import { ref} from 'vue';
+import { ref } from 'vue';
 
 import playIcon from '../assets/Play_Button.svg?url';
 import pauseIcon from '../assets/Pause_Button.svg?url';

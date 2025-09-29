@@ -30,7 +30,7 @@ export default defineConfig([
   },
 
   {
-    files: ['src/pages/**/*.js', 'src/pages/**/*.vue', 'src/components/**/*.vue'],
+    files: ['src/pages/**/*.js', 'src/pages/**/*.vue', 'src/components/**/*.vue','src/**/*.vue'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2021,
