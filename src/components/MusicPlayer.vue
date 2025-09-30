@@ -65,15 +65,17 @@
 import VueSlider from 'vue-3-slider-component';
 import { ref } from 'vue';
 
-import playIcon from '../assets/Play_Button.svg?url';
-import pauseIcon from '../assets/Pause_Button.svg?url';
-import notLoopIcon from '../assets/not_Looping.svg?url';
-import loopIcon from '../assets/Looping.svg?url';
-import loopSingleIcon from '../assets/Looping_single.svg?url';
-import shuffleOffIcon from '../assets/not_Shuffling.svg?url';
-import shuffleOnIcon from '../assets/Shuffling.svg?url';
-import skipPreviousIcon from '../assets/Skip_Previous.svg?url';
-import skipNextIcon from '../assets/Skip_Next.svg?url';
+import {
+  playIcon,
+  pauseIcon,
+  skipNextIcon,
+  skipPreviousIcon,
+  notLoopIcon,
+  loopIcon,
+  loopSingleIcon,
+  shuffleOffIcon,
+  shuffleOnIcon,
+} from '../composables/Icons.js';
 
 const sliderValue = ref(0);
 const currentPlayIcon = ref(playIcon);

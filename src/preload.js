@@ -1,3 +1,6 @@
+// See the Electron documentation for details on how to use preload scripts:
+// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+
 import { webFrame } from 'electron';
 import { contextBridge, ipcRenderer } from 'electron';
 
@@ -14,5 +17,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   checkFolder: () => ipcRenderer.invoke('check-folder'),
   openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
 });
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+
+import './composables/Icons.js';
