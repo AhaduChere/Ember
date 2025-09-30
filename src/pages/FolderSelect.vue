@@ -9,16 +9,15 @@
 </template>
 
 <script setup>
+import { folder } from '../composables/MusicFolder';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
 async function selectFolder() {
-  const folder = await window.electronAPI.openFolderDialog();
-  if (folder) {
-    const songs = await window.electronAPI.getSongs(); // load .mp3 files
-    if (songs.length > 0) {
-      router.push('/'); // navigate to main route
-    }
+  const selected = await window.electronAPI.openFolderDialog();
+  if (selected) {
+    folder.value = selected;
+    router.push('/');
   }
 }
 </script>

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { checkMusicFolder, openFolderDialog } from './composables/FolderSetup.ts';
+import { checkMusicFolder, openFolderDialog } from './FolderSetup.js';
 
 if (started) app.quit();
 

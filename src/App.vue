@@ -1,5 +1,6 @@
 <template>
-  <div v-if="folderOk">
+  <div v-if="loading" class="bg-stone-900 w-screen h-screen" />
+  <div v-else-if="folder">
     <router-view />
   </div>
   <div v-else>
@@ -8,18 +9,16 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onMounted } from 'vue';
-const folderOk = ref(true);
+import { ref, onMounted } from 'vue';
+import { folder } from './composables/MusicFolder';
 
-onBeforeMount(async () => {
-  folderOk.value = await window.electronAPI.checkFolder();
-});
+const loading = ref(true);
 
-onMounted(() => {
-  if (!folderOk.value) {
-    console.log('doing');
-  } else {
-    console.log('Not doing');
+onMounted(async () => {
+  if (folder.value == null) {
+    const result = await window.electronAPI.checkFolder();
+    folder.value = result;
   }
+  loading.value = false;
 });
 </script>

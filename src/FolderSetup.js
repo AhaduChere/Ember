@@ -1,16 +1,16 @@
 import { app, dialog } from 'electron';
 import fs from 'fs';
 
-export function checkMusicFolder(): boolean {
+export function checkMusicFolder() {
   try {
     const musicPath = app.getPath('music');
-    return fs.existsSync(musicPath);
+    return fs.existsSync(musicPath) ? musicPath : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
-export async function openFolderDialog(): Promise<string | null> {
+export async function openFolderDialog() {
   const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
   return result.filePaths[0] || null;
 }
