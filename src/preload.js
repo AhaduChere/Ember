@@ -16,6 +16,8 @@ window.addEventListener('keydown', (e) => {
 contextBridge.exposeInMainWorld('electronAPI', {
   checkFolder: () => ipcRenderer.invoke('check-folder'),
   openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
+  LoadSongs: (folder) => ipcRenderer.invoke('load-songs', folder),
 });
 
 import './composables/Icons.js';
+import './composables/Folder.js';

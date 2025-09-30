@@ -63,7 +63,12 @@
 
 <script setup>
 import VueSlider from 'vue-3-slider-component';
-import { ref } from 'vue';
+import { folder } from '../composables/Folder';
+import { ref, onMounted } from 'vue';
+
+onMounted(async () => {
+  const testfolder = await window.electronAPI.LoadSongs(folder.value);
+});
 
 import {
   playIcon,

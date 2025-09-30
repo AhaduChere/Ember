@@ -10,7 +10,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { folder } from './composables/MusicFolder';
+import { folder } from './composables/Folder';
 
 const loading = ref(true);
 
