@@ -1,13 +1,13 @@
 <template>
   <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
   <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
-    <div class="flex items-center justify-center mt-5 pb-2">
+    <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
+      <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2">{{ songs[currentSongIndex]?.name || '' }}</span>
       <VueSlider
-        id="Slider"
         v-model="sliderValue"
-        class="focus:outline-none"
+        class="focus:outline-none flex-none"
         :height="4"
-        :width="600"
+        :style="{ width: '40%' }"
         :min="0"
         :max="duration"
         :interval="1"
@@ -18,6 +18,7 @@
         :contained="true"
         :use-keyboard="false"
         @change="onSliderChange" />
+      <span class="text-white truncate text-left max-w-[20%] flex-grow pl-2">{{ formatTime(sliderValue) }}/{{ formatTime(duration) }}</span>
     </div>
 
     <div class="contents">
@@ -63,32 +64,14 @@
           @click="toggleShuffle" />
       </div>
     </div>
-    <div class="flex justify-center mt-2">
-      <ul>
-        <li v-for="(song, idx) in songs" :key="song.path" :class="{ 'text-orange-500': idx === currentSongIndex }">
-          {{ song.name }}
-        </li>
-      </ul>
-    </div>
   </div>
 </template>
 
 <script setup>
 import VueSlider from 'vue-3-slider-component';
-import { folder } from '../composables/Folder';
 import { ref, onMounted, watch } from 'vue';
-
-const shouldAutoPlay = ref(false);
-let audioSrc = ref('');
-let songs = ref([]);
-let currentSongIndex = ref(0);
-let isPlaying = ref(false);
-let isShuffling = ref(false);
-let loopMode = ref(0);
-let duration = ref(100);
-let sliderValue = ref(0);
-const audioRef = ref(null);
-
+import { folder } from '../composables/Folder.js';
+import { songs, currentSongIndex, setSongs } from '../composables/Songs.js';
 import {
   playIcon,
   pauseIcon,
@@ -104,9 +87,17 @@ import {
 const currentPlayIcon = ref(playIcon);
 const currentShuffleIcon = ref(shuffleOffIcon);
 const currentLoopIcon = ref(notLoopIcon);
+let audioSrc = ref('');
+const shouldAutoPlay = ref(false);
+let isPlaying = ref(false);
+let isShuffling = ref(false);
+let loopMode = ref(0);
+let duration = ref(100);
+let sliderValue = ref(0);
+const audioRef = ref(null);
 
 onMounted(async () => {
-  songs.value = await window.electronAPI.LoadSongs(folder.value);
+  setSongs(await window.electronAPI.LoadSongs(folder.value));
   if (songs.value.length > 0) {
     await loadSong(currentSongIndex.value);
   } else {
@@ -132,11 +123,9 @@ async function loadSong(index) {
   const blob = new Blob([new Uint8Array(buffer)], { type: 'audio/mp3' });
   audioSrc.value = URL.createObjectURL(blob);
   sliderValue.value = 0;
-  shouldAutoPlay.value = true;
 }
 
 function playNext() {
-  pauseAudio();
   if (songs.value.length === 0) return;
   if (isShuffling.value) {
     let next;
@@ -150,23 +139,21 @@ function playNext() {
   } else {
     currentSongIndex.value = (currentSongIndex.value + 1) % songs.value.length;
   }
+  shouldAutoPlay.value = true;
   loadSong(currentSongIndex.value);
 }
 
 function playPrevious() {
-  pauseAudio();
-  if (songs.value.length === 0) return;
-  if (isShuffling.value) {
-    let prev;
-    do {
-      prev = Math.floor(Math.random() * songs.value.length);
-    } while (prev === currentSongIndex.value && songs.value.length > 1);
-    currentSongIndex.value = prev;
-  } else {
-    currentSongIndex.value = (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
+  if (songs.value.length === 0 || !audioRef.value) return;
+
+  if (audioRef.value.currentTime > 3 || currentSongIndex.value === 0) {
+    audioRef.value.currentTime = 0;
+    return;
   }
+
+  currentSongIndex.value = (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
+  shouldAutoPlay.value = true;
   loadSong(currentSongIndex.value);
-  playAudio();
 }
 
 async function playAudio() {
@@ -194,8 +181,10 @@ function togglePlayback() {
   if (!audioRef.value) return;
   if (isPlaying.value) {
     pauseAudio();
+    shouldAutoPlay.value = false;
   } else {
     playAudio();
+    shouldAutoPlay.value = true;
   }
 }
 
@@ -252,5 +241,12 @@ function onSliderChange(val) {
   if (audioRef.value) {
     audioRef.value.currentTime = val;
   }
+}
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2, '0');
+  return `${m}:${s}`;
 }
 </script>
