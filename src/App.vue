@@ -16,7 +16,7 @@ const loading = ref(true);
 
 onMounted(async () => {
   if (folder.value == null) {
-    const result = await window.electronAPI.checkFolder();
+    const result = await window.electronAPI.checkMusicFolder();
     folder.value = result;
   }
   loading.value = false;

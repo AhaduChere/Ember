@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { checkMusicFolder, openFolderDialog } from './utils/FolderSetup.js';
-import { LoadSongs } from './utils/LoadSongs.js';
+import { LoadSongs, getMp3Buffer } from './utils/LoadSongs.js';
 
 if (started) app.quit();
 
@@ -41,4 +41,5 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('check-folder', () => checkMusicFolder());
 ipcMain.handle('open-folder-dialog', () => openFolderDialog());
-ipcMain.handle('load-songs', ( folder) => LoadSongs(folder))
+ipcMain.handle('load-songs', (_, folder) => LoadSongs(folder));
+ipcMain.handle('get-mp3-buffer', (_, filePath) => getMp3Buffer(filePath));

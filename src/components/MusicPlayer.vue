@@ -1,4 +1,5 @@
 <template>
+  <audio :src="audioSrc" controls></audio>
   <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
     <div class="flex items-center justify-center mt-5 pb-2">
       <VueSlider
@@ -66,8 +67,17 @@ import VueSlider from 'vue-3-slider-component';
 import { folder } from '../composables/Folder';
 import { ref, onMounted } from 'vue';
 
+let audioSrc = ref('');
+
 onMounted(async () => {
-  const testfolder = await window.electronAPI.LoadSongs(folder.value);
+  const firstmp3 = await window.electronAPI.LoadSongs(folder.value);
+  if (firstmp3) {
+    const buffer = await window.electronAPI.getMp3Buffer(firstmp3);
+    const blob = new Blob([new Uint8Array(buffer)], { type: 'audio/mp3' });
+    audioSrc.value = URL.createObjectURL(blob);
+  } else {
+    audioSrc.value = '';
+  }
 });
 
 import {

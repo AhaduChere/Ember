@@ -14,10 +14,10 @@ window.addEventListener('keydown', (e) => {
 });
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  checkFolder: () => ipcRenderer.invoke('check-folder'),
+  checkMusicFolder: () => ipcRenderer.invoke('check-folder'),
   openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
   LoadSongs: (folder) => ipcRenderer.invoke('load-songs', folder),
+  getMp3Buffer: (filePath) => ipcRenderer.invoke('get-mp3-buffer', filePath),
 });
 
 import './composables/Icons.js';
-import './composables/Folder.js';
