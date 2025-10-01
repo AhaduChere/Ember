@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { checkMusicFolder, openFolderDialog, LoadSongs, getMp3Buffer } from './utils/FolderSetup.js';
@@ -10,6 +10,7 @@ const createWindow = () => {
     fullscreen: false,
     resizable: true,
     frame: true,
+    icon: path.join(__dirname, 'src', 'assets', 'Icon.png'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -29,6 +30,7 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   createWindow();
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

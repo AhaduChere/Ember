@@ -96,14 +96,18 @@ let duration = ref(100);
 let sliderValue = ref(0);
 const audioRef = ref(null);
 
-onMounted(async () => {
+onMounted(() => {
+  setup();
+});
+
+async function setup() {
   setSongs(await window.electronAPI.LoadSongs(folder.value));
   if (songs.value.length > 0) {
     await loadSong(currentSongIndex.value);
   } else {
     audioSrc.value = '';
   }
-});
+}
 
 watch(audioSrc, async () => {
   if (audioRef.value) {
