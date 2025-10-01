@@ -3,8 +3,11 @@ import path from 'node:path';
 
 export function LoadSongs(folder) {
   const files = fs.readdirSync(folder);
-  const mp3 = files.find((file) => file.endsWith('.mp3'));
-  return mp3 ? path.join(folder, mp3) : null;
+  const mp3s = files.filter((file) => file.endsWith('.mp3'));
+  return mp3s.map((file) => ({
+    name: path.parse(file).name,
+    path: path.join(folder, file),
+  }));
 }
 
 export function getMp3Buffer(filePath) {
