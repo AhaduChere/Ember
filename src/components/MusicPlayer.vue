@@ -175,10 +175,9 @@ async function playAudio() {
       await audioRef.value.play();
       isPlaying.value = true;
       currentPlayIcon.value = pauseIcon;
-    } catch (e) {
-      if (e.name !== 'AbortError') {
-        console.error(e);
-      }
+    } catch {
+      isPlaying.value = false;
+      currentPlayIcon.value = playIcon;
     }
   }
 }

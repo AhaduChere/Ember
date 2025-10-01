@@ -39,6 +39,8 @@ export default defineConfig([
       globals: {
         window: 'readonly',
         console: 'readonly',
+        Blob: 'readonly',
+        URL: 'readonly',
       },
     },
     rules: {
