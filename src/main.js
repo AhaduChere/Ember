@@ -9,8 +9,10 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     fullscreen: false,
     resizable: true,
-    height: 800,
-    width: 1000,
+    height: 600,
+    width: 800,
+    minHeight: 400,
+    minWidth: 600,
     frame: true,
     icon: path.join(__dirname, 'src', 'assets', 'Icon.png'),
     webPreferences: {

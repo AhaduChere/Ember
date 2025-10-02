@@ -2,7 +2,7 @@
   <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
   <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
     <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
-      <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2">{{ songs[currentSongIndex]?.name || '' }}</span>
+      <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2 select-none">{{ songs[currentSongIndex]?.name || '' }}</span>
       <VueSlider
         v-model="sliderValue"
         class="focus:outline-none flex-none"
@@ -18,7 +18,9 @@
         :contained="true"
         :use-keyboard="false"
         @change="onSliderChange" />
-      <span class="text-white truncate text-left max-w-[20%] flex-grow pl-2">{{ formatTime(sliderValue) }}/{{ formatTime(duration) }}</span>
+      <span class="text-white truncate text-left max-w-[20%] flex-grow pl-2 select-none"
+      >{{ formatTime(sliderValue) }}/{{ formatTime(duration) }}</span
+      >
     </div>
 
     <div class="contents">
