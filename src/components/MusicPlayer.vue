@@ -98,6 +98,11 @@ const audioRef = ref(null);
 
 onMounted(() => {
   setup();
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      togglePlayback();
+    }
+  });
 });
 
 async function setup() {
@@ -138,8 +143,7 @@ function playNext() {
     } while (next === currentSongIndex.value && songs.value.length > 1);
     currentSongIndex.value = next;
   } else if (loopMode.value === 2) {
-    // loop one
-    // do nothing, will be handled by audio element
+    // loop single
   } else {
     currentSongIndex.value = (currentSongIndex.value + 1) % songs.value.length;
   }
