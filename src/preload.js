@@ -7,9 +7,8 @@ import { contextBridge, ipcRenderer } from 'electron';
 // Disables Zoom
 webFrame.setZoomFactor(1);
 window.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '0')) {
+  if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === 'r')) {
     e.preventDefault();
-    webFrame.setZoomFactor(1);
   }
 });
 

@@ -19,6 +19,8 @@ export default defineConfig([
         process: 'readonly',
         MAIN_WINDOW_VITE_DEV_SERVER_URL: 'readonly',
         MAIN_WINDOW_VITE_NAME: 'readonly',
+        window: 'readonly',
+        Blob: 'readonly',
       },
     },
     plugins: { node: pluginNode },
@@ -30,15 +32,15 @@ export default defineConfig([
   },
 
   {
-    files: ['src/pages/**/*.js', 'src/pages/**/*.vue', 'src/components/**/*.vue', 'src/**/*.vue', 'src/*.vue'],
+    files: ['src/pages/**/*.{js,vue}', 'src/components/**/*.{js,vue}', 'src/**/*.{js,vue}', 'src/*.{js,vue}'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2021,
         sourceType: 'module',
       },
       globals: {
-        window: 'readonly',
         console: 'readonly',
+        window: 'readonly',
         Blob: 'readonly',
         URL: 'readonly',
       },
@@ -56,6 +58,7 @@ export default defineConfig([
       'vue/html-closing-bracket-spacing': 'off',
       'vue/singleline-html-element-content-newline': 'off',
       'vue/max-attributes-per-line': 'off',
+      'no-empty': 'off',
     },
   },
 ]);
