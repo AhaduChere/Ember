@@ -7,12 +7,38 @@ import loopIcon from '../assets/Looping.svg?url';
 import loopSingleIcon from '../assets/Looping_single.svg?url';
 import shuffleOffIcon from '../assets/not_Shuffling.svg?url';
 import shuffleOnIcon from '../assets/Shuffling.svg?url';
+import audioOn from '../assets/Audio-On.svg';
+import audioOff from '../assets/Audio-Off.svg';
 
-const icons = [playIcon, pauseIcon, skipNextIcon, skipPreviousIcon, notLoopIcon, loopIcon, loopSingleIcon, shuffleOffIcon, shuffleOnIcon];
+const icons = [
+  playIcon,
+  pauseIcon,
+  skipNextIcon,
+  skipPreviousIcon,
+  notLoopIcon,
+  loopIcon,
+  loopSingleIcon,
+  shuffleOffIcon,
+  shuffleOnIcon,
+  audioOn,
+  audioOff,
+];
 
 icons.forEach((src) => {
   const img = new Image();
   img.src = src;
 });
 
-export { playIcon, pauseIcon, skipNextIcon, skipPreviousIcon, notLoopIcon, loopIcon, loopSingleIcon, shuffleOffIcon, shuffleOnIcon };
+export {
+  playIcon,
+  pauseIcon,
+  skipNextIcon,
+  skipPreviousIcon,
+  notLoopIcon,
+  loopIcon,
+  loopSingleIcon,
+  shuffleOffIcon,
+  shuffleOnIcon,
+  audioOff,
+  audioOn,
+};

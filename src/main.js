@@ -11,8 +11,8 @@ const createWindow = () => {
     resizable: true,
     height: 600,
     width: 800,
-    minHeight: 450,
-    minWidth: 600,
+    minHeight: 600,
+    minWidth: 800,
     frame: true,
     icon: path.join(__dirname, 'src', 'assets', 'Icon.png'),
     webPreferences: {

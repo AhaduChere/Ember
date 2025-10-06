@@ -66,12 +66,19 @@ export function playNext() {
 export function playPrevious() {
   if (songs.value.length === 0 || !audioRef?.value) return;
 
-  if (audioRef.value.currentTime > 3 || (currentSongIndex.value === 0 && loopMode.value !== 1)) {
+  if (audioRef.value.currentTime > 3 || (currentSongIndex.value === 0 && loopMode.value != 1 && !isShuffling.value)) {
     audioRef.value.currentTime = 0;
     return;
   }
-
-  currentSongIndex.value = (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
+  if (isShuffling.value) {
+    let next;
+    do {
+      next = Math.floor(Math.random() * songs.value.length);
+    } while (next === currentSongIndex.value && songs.value.length > 1);
+    currentSongIndex.value = next;
+  } else {
+    currentSongIndex.value = (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
+  }
   shouldAutoPlay.value = true;
   loadSong(currentSongIndex.value);
 }
@@ -158,12 +165,4 @@ export function onSliderChange(val) {
   if (audioRef?.value) {
     audioRef.value.currentTime = val;
   }
-}
-
-export function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60)
-    .toString()
-    .padStart(2, '0');
-  return `${m}:${s}`;
 }
