@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { checkMusicFolder, openFolderDialog, LoadSongs, getMp3Buffer } from './utils/FolderSetup.js';
+import { checkMusicFolder, openFolderDialog, LoadSongs, getMp3Buffer, getFolders } from './utils/FolderSetup.js';
 
 if (started) app.quit();
 
@@ -11,7 +11,7 @@ const createWindow = () => {
     resizable: true,
     height: 600,
     width: 800,
-    minHeight: 400,
+    minHeight: 450,
     minWidth: 600,
     frame: true,
     icon: path.join(__dirname, 'src', 'assets', 'Icon.png'),
@@ -48,3 +48,4 @@ ipcMain.handle('check-folder', () => checkMusicFolder());
 ipcMain.handle('open-folder-dialog', () => openFolderDialog());
 ipcMain.handle('load-songs', (_, folder) => LoadSongs(folder));
 ipcMain.handle('get-mp3-buffer', (_, filePath) => getMp3Buffer(filePath));
+ipcMain.handle('get-folders', (_, folder) => getFolders(folder));

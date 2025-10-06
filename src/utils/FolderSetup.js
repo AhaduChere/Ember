@@ -28,3 +28,7 @@ export function LoadSongs(folder) {
 export function getMp3Buffer(filePath) {
   return fs.readFileSync(filePath);
 }
+
+export function getFolders(folder) {
+  return folder;
+}

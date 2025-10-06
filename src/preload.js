@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
   LoadSongs: (folder) => ipcRenderer.invoke('load-songs', folder),
   getMp3Buffer: (filePath) => ipcRenderer.invoke('get-mp3-buffer', filePath),
+  getFolders: (folder) => ipcRenderer.invoke('get-folders', folder),
 });
 
 import './composables/Icons.js';
