@@ -3,9 +3,7 @@
   <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
     <div class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icon" class="w-16 h-16 rounded select-none" />
-      <span class="truncate max-w-xs select-none hover:underline underline-offset-2 cursor-pointer">{{
-        songs[currentSongIndex]?.name || ''
-      }}</span>
+      <span class="truncate max-w-xs select-none">{{ songs[currentSongIndex]?.name || '' }}</span>
     </div>
     <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
       <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2 select-none">
@@ -73,8 +71,8 @@
           @click="toggleShuffle" />
       </div>
     </div>
-    <div class="fixed right-2 bottom-4 flex items-center w-40">
-      <img :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto rounded select-none" />
+    <div class="fixed right-2 bottom-8 flex items-center w-[20vw] max-w-60">
+      <img :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto rounded select-none mr-3" />
       <VueSlider
         v-model="volume"
         :min="0"
@@ -84,7 +82,7 @@
         :process-style="{ backgroundColor: '#ea580c' }"
         :rail-style="{ backgroundColor: '#4B5563' }"
         :tooltip="'none'"
-        class="flex-1" />
+        class="flex-1 mr-4" />
     </div>
   </div>
 </template>

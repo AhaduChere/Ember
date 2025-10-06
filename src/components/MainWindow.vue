@@ -14,7 +14,7 @@
             :key="song.name"
             class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-lg flex items-center justify-between transition">
             <span class="text-lg font-semibold truncate select-none justify-center">
-              {{ song.name.replace(/\.mp3$/, '') }}
+              {{ song.name.replace(/\.mp3$/, ' ') }}
             </span>
             <img
               draggable="false"
