@@ -7,7 +7,10 @@ import { contextBridge, ipcRenderer } from 'electron';
 // Disables Zoom
 webFrame.setZoomFactor(1);
 window.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === 'r')) {
+  if (e.ctrlKey && ['+', '-', '0', 'r'].includes(e.key)) {
+    e.preventDefault();
+  }
+  if (e.code === 'Space' && e.target === document.body) {
     e.preventDefault();
   }
 });

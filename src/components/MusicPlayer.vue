@@ -90,7 +90,7 @@
 <script setup>
 import VueSlider from 'vue-3-slider-component';
 import { ref, onMounted, watch } from 'vue';
-import { folder } from '../composables/Folder.js';
+import { folder, folders } from '../composables/Folder.js';
 import { skipNextIcon, skipPreviousIcon, audioOn, audioOff } from '../composables/Icons.js';
 import Icon from '../assets/Icon.png';
 import {
@@ -138,6 +138,7 @@ watch(volume, (val) => {
 
 async function setup() {
   setSongs(await window.electronAPI.LoadSongs(folder.value));
+  folders.value = await window.electronAPI.getFolders(folder.value);
   if (songs.value.length > 0) {
     await loadSong(currentSongIndex.value);
   } else {

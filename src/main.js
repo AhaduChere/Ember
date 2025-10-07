@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { checkMusicFolder, openFolderDialog, LoadSongs, getMp3Buffer, getFolders } from './utils/FolderSetup.js';
@@ -22,7 +22,6 @@ const createWindow = () => {
     },
   });
 
-  //checks if dev or production
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
@@ -32,6 +31,7 @@ const createWindow = () => {
   return mainWindow;
 };
 
+// Menu.setApplicationMenu(null);
 app.whenReady().then(() => {
   createWindow();
 

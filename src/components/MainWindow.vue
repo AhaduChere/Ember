@@ -1,11 +1,18 @@
 <template>
   <div class="bg-[#121212] text-white min-h-screen">
-    <main class="grid grid-cols-3 overflow-clip">
-      <section class="col-span-1 border-r-4 border-stone-700 px-4 h-[100vh] overflow-x-clip">
-        <div>all playlists/folders will go here</div>
+    <main class="grid grid-cols-5 lg:grid-cols-6 overflow-clip">
+      <section class="col-span-1 border-r-4 border-stone-700 p-4">
+        <div class="grid grid-cols-1 gap-2">
+          <div
+            v-for="folder in folders"
+            :key="folder"
+            class="bg-[#1f1f1f] w-full mx-auto hover:bg-[#2a2a2a] p-8 rounded-lg truncate cursor-pointer select-none flex justify-center items-center">
+            {{ folder.split('/').pop() }}
+          </div>
+        </div>
       </section>
-      <section class="col-span-2 h-[80vh] overflow-y-auto overflow-x-hidden">
-        <div class="h-40 border-b-4 border-stone-700 pl-4">
+      <section class="col-span-4 lg:col-span-5 h-svh overflow-y-auto overflow-x-hidden">
+        <div class="h-48 border-b-4 border-stone-700">
           <div>Name of Current playlist will go here</div>
         </div>
         <div class="grid grid-cols-1 gap-4 mt-6 px-5">
@@ -13,7 +20,11 @@
             v-for="(song, index) in songs"
             :key="song.name"
             class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-lg flex items-center justify-between transition">
-            <span class="text-lg font-semibold truncate select-none justify-center">
+            <span
+              :class="[
+                'text-lg truncate select-none justify-center',
+                currentSongIndex === index ? 'text-[#ea580c] font-extrabold' : 'font-extralight text-white',
+              ]">
               {{ song.name.replace(/\.mp3$/, ' ') }}
             </span>
             <img
@@ -31,6 +42,7 @@
 <script setup>
 import { songs, currentSongIndex, loadSong, playAudio, pauseAudio, isPlaying, shouldAutoPlay } from '../composables/Songs.js';
 import { playIcon, pauseIcon } from '../composables/Icons.js';
+import { folders } from '../composables/Folder.js';
 async function selectSong(index) {
   if (currentSongIndex.value === index) {
     if (isPlaying.value) {
