@@ -13,6 +13,8 @@ export const shouldAutoPlay = ref(false);
 export const currentPlayIcon = ref(playIcon);
 export const currentShuffleIcon = ref(shuffleOffIcon);
 export const currentLoopIcon = ref(notLoopIcon);
+export const folder = ref(null);
+export const folders = ref([]);
 
 let audioRef = null;
 

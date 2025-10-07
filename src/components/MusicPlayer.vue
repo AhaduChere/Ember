@@ -71,7 +71,7 @@
           @click="toggleShuffle" />
       </div>
     </div>
-    <div class="fixed right-2 bottom-8 flex items-center w-[20vw] max-w-60">
+    <div class="fixed right-2 bottom-8 flex items-center w-[20vw] max-w-70">
       <img :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto rounded select-none mr-3" />
       <VueSlider
         v-model="volume"
@@ -90,7 +90,6 @@
 <script setup>
 import VueSlider from 'vue-3-slider-component';
 import { ref, onMounted, watch } from 'vue';
-import { folder, folders } from '../composables/Folder.js';
 import { skipNextIcon, skipPreviousIcon, audioOn, audioOff } from '../composables/Icons.js';
 import Icon from '../assets/Icon.png';
 import {
@@ -115,6 +114,8 @@ import {
   onLoadedMetadata,
   onSliderChange,
   sliderValue,
+  folder,
+  folders,
 } from '../composables/Songs.js';
 
 const audioRef = ref(null);
@@ -137,8 +138,14 @@ watch(volume, (val) => {
 });
 
 async function setup() {
+  const allFolders = await window.electronAPI.getFolders(folder.value);
+
+  if (allFolders.length > 0) {
+    folders.value = [folder.value, ...allFolders.filter((f) => f !== folder.value)];
+  }
+
   setSongs(await window.electronAPI.LoadSongs(folder.value));
-  folders.value = await window.electronAPI.getFolders(folder.value);
+
   if (songs.value.length > 0) {
     await loadSong(currentSongIndex.value);
   } else {

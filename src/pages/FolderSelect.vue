@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { folder } from '../composables/Folder';
+import { folder } from '../composables/Songs.js';
 
 async function selectFolder() {
   const selected = await window.electronAPI.openFolderDialog();

@@ -4,10 +4,11 @@
       <section class="col-span-1 border-r-4 border-stone-700 p-4">
         <div class="grid grid-cols-1 gap-2">
           <div
-            v-for="folder in folders"
-            :key="folder"
-            class="bg-[#1f1f1f] w-full mx-auto hover:bg-[#2a2a2a] p-8 rounded-lg truncate cursor-pointer select-none flex justify-center items-center">
-            {{ folder.split('/').pop() }}
+            v-for="folderItem in folders"
+            :key="folderItem"
+            class="bg-[#1f1f1f] w-full hover:bg-[#2a2a2a] p-6 rounded-lg truncate cursor-pointer select-none flex justify-center items-center transition-colors"
+            :class="folderItem === folder ? 'text-[#ea580c] font-bold' : 'text-white font-medium'">
+            {{ folderItem.split('/').pop() }}
           </div>
         </div>
       </section>
@@ -19,7 +20,12 @@
           <div
             v-for="(song, index) in songs"
             :key="song.name"
-            class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-lg flex items-center justify-between transition">
+            class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-lg flex items-center justify-start transition">
+            <img
+              draggable="false"
+              :src="currentSongIndex === index && isPlaying ? pauseIcon : playIcon"
+              class="w-12 h-12 mr-4 cursor-pointer select-none"
+              @click.stop="selectSong(index)" />
             <span
               :class="[
                 'text-lg truncate select-none justify-center',
@@ -27,11 +33,6 @@
               ]">
               {{ song.name.replace(/\.mp3$/, ' ') }}
             </span>
-            <img
-              draggable="false"
-              :src="currentSongIndex === index && isPlaying ? pauseIcon : playIcon"
-              class="w-12 h-12 ml-4 cursor-pointer select-none"
-              @click.stop="selectSong(index)" />
           </div>
         </div>
       </section>
@@ -40,9 +41,19 @@
 </template>
 
 <script setup>
-import { songs, currentSongIndex, loadSong, playAudio, pauseAudio, isPlaying, shouldAutoPlay } from '../composables/Songs.js';
 import { playIcon, pauseIcon } from '../composables/Icons.js';
-import { folders } from '../composables/Folder.js';
+import {
+  songs,
+  currentSongIndex,
+  loadSong,
+  playAudio,
+  pauseAudio,
+  isPlaying,
+  shouldAutoPlay,
+  folder,
+  folders,
+} from '../composables/Songs.js';
+
 async function selectSong(index) {
   if (currentSongIndex.value === index) {
     if (isPlaying.value) {
