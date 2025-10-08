@@ -2,7 +2,7 @@
   <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
   <div class="w-screen h-24 bg-neutral-950 fixed bottom-0">
     <div class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
-      <img :src="Icon" class="w-16 h-16 rounded select-none" />
+      <img :src="Icon" class="w-16 h-auto rounded select-none" />
       <span class="truncate select-none whitespace-pre-line overflow-ellipsis w-[16vw]">
         {{ (nowPlaying?.name || '').split('-')[0] }}
         <template v-if="(nowPlaying?.name || '').includes('-')">
