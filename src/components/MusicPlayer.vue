@@ -1,12 +1,10 @@
 <template>
   <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
-  <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
+  <div class="w-screen h-24 bg-neutral-950 fixed bottom-0">
     <div class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icon" class="w-16 h-16 rounded select-none" />
-      <span class="truncate max-w-xs select-none whitespace-pre-line">
-        <span class="font-semibold">
-          {{ (nowPlaying?.name || '').split('-')[0] }}
-        </span>
+      <span class="truncate select-none whitespace-pre-line overflow-ellipsis w-[16vw]">
+        {{ (nowPlaying?.name || '').split('-')[0] }}
         <template v-if="(nowPlaying?.name || '').includes('-')">
           <br />
           <span class="text-sm text-gray-400"> by {{ (nowPlaying?.name || '').split('-').slice(1).join('-') }} </span>
@@ -20,6 +18,7 @@
       <VueSlider
         v-model="sliderValue"
         class="focus:outline-none flex-none"
+        :disabled="sliderValue == 0"
         :height="4"
         :style="{ width: '40%' }"
         :min="0"
@@ -36,7 +35,7 @@
         @change="onSliderChange" />
       <span class="text-white truncate text-left max-w-[20%] flex-grow pl-2 select-none">{{ formatTime(duration) }}</span>
     </div>
-    <div class="flex justify-center items-stretch mt-2">
+    <div class="flex justify-center items-stretch mb-2">
       <img :src="currentLoopIcon" class="w-8 h-12 cursor-pointer select-none mr-2" @click="toggleLoop" />
       <img :src="skipPreviousIcon" class="w-12 h-12 cursor-pointer select-none mr-2" @click="playPrevious" />
       <img :src="currentPlayIcon" class="w-12 h-12 cursor-pointer select-none" @click="togglePlayback" />

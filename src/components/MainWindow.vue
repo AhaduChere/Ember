@@ -1,24 +1,36 @@
 <template>
   <div class="bg-[#121212] text-white min-h-screen">
     <main class="grid grid-cols-4 h-full overflow-clip">
-      <section class="col-span-1 border-r border-stone-800 h-screen overflow-y-auto p-4 flex flex-col gap-3">
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <section
+        class="col-span-1 border-r border-stone-800 overflow-y-auto scrollbar-hidden p-4 flex flex-col gap-3"
+        :style="{ height: 'calc(100vh - 6rem)' }">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div
             v-for="folderItem in folders"
             :key="folderItem"
-            class="min-w-[150px] bg-[#1f1f1f]/80 hover:bg-[#1f1f1f] rounded-xl cursor-pointer select-none font-medium transition-colors text-center flex items-center justify-center p-6"
-            :class="folderItem === folder ? 'text-[#ea580c] ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : 'text-gray-300'"
+            class="group bg-[#1f1f1f] rounded-xl cursor-pointer overflow-hidden transition-all shadow-md"
+            :class="folderItem === folder ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : ''"
             @click="selectFolder(folderItem)">
-            {{ folderItem.split('/').pop() }}
+            <div class="h-24 bg-[#1f1f1f] flex items-center justify-center">
+              <span class="text-9xl text-[#ea580c] font-bold select-none"> ♪ </span>
+            </div>
+            <div class="p-4 text-center">
+              <span class="block text-base font-semibold truncate text-gray-200">
+                {{ folderItem.split('/').pop() }}
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="col-span-2 h-screen overflow-y-auto px-6 pt-6 flex flex-col gap-4">
+      <section class="col-span-2 overflow-y-auto scrollbar-hidden px-6 pt-4 flex flex-col gap-4" :style="{ height: 'calc(100vh - 7rem)' }">
         <div
           v-for="(song, index) in songs"
           :key="song.name"
-          class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-xl flex items-center gap-4 transition cursor-pointer">
+          :class="[
+            'bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-xl flex items-center gap-4  cursor-pointer',
+            nowPlaying?.path === song.path ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : '',
+          ]">
           <img
             draggable="false"
             :src="nowPlaying?.path === song.path && isPlaying ? pauseIcon : playIcon"
@@ -59,7 +71,9 @@
         </div>
       </section>
 
-      <section class="col-span-1 border-l border-stone-800 h-screen overflow-y-auto p-4 flex flex-col gap-3">
+      <section
+        class="col-span-1 border-l border-stone-800 overflow-y-auto p-4 flex flex-col gap-3"
+        :style="{ height: 'calc(100vh - 8rem)' }">
         <div
           class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-3 rounded-xl cursor-pointer select-none flex items-center justify-center text-center font-semibold transition-colors"
           @click="refreshApp">
@@ -72,7 +86,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { playIcon, pauseIcon } from '../composables/Icons.js';
+import { playIcon, pauseIcon, refresh } from '../composables/Icons.js';
 import {
   songs,
   currentSongIndex,
@@ -133,22 +147,7 @@ const refreshApp = async () => {
 </script>
 
 <style scoped>
-section::-webkit-scrollbar {
-  width: 8px;
-}
-
-section::-webkit-scrollbar-track {
-  background: #1f1f1f;
-  border-radius: 4px;
-}
-
-section::-webkit-scrollbar-thumb {
-  background-color: #555;
-  border-radius: 4px;
-  border: 2px solid #1f1f1f;
-}
-
-section::-webkit-scrollbar-thumb:hover {
-  background-color: #888;
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 </style>
