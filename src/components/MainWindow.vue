@@ -1,32 +1,69 @@
 <template>
   <div class="bg-[#121212] text-white min-h-screen">
-    <main class="grid grid-cols-5 lg:grid-cols-6 h-full overflow-clip">
-      <section class="col-span-1 border-r-4 border-stone-900 h-svh overflow-y-auto p-2 flex flex-col gap-2">
-        <div class="w-full h-20 flex justify-center items-center border-b-4 border-stone-900">
-          <img :src="refresh" draggable="false" class="w-10 h-auto cursor-pointer select-none" />
-        </div>
-        <div
-          v-for="folderItem in folders"
-          :key="folderItem"
-          class="bg-[#1f1f1f] w-full hover:bg-[#2a2a2a] p-4 rounded-lg cursor-pointer select-none flex flex-col justify-center items-center transition-colors break-words"
-          :class="folderItem === folder ? 'text-[#ea580c] font-bold' : 'text-white font-medium'"
-          @click="selectFolder(folderItem)">
-          {{ folderItem.split('/').pop() }}
+    <main class="grid grid-cols-4 h-full overflow-clip">
+      <section class="col-span-1 border-r border-stone-800 h-screen overflow-y-auto p-4 flex flex-col gap-3">
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div
+            v-for="folderItem in folders"
+            :key="folderItem"
+            class="min-w-[150px] bg-[#1f1f1f]/80 hover:bg-[#1f1f1f] rounded-xl cursor-pointer select-none font-medium transition-colors text-center flex items-center justify-center p-6"
+            :class="folderItem === folder ? 'text-[#ea580c] ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : 'text-gray-300'"
+            @click="selectFolder(folderItem)">
+            {{ folderItem.split('/').pop() }}
+          </div>
         </div>
       </section>
-      <section class="col-span-4 lg:col-span-5 h-svh overflow-y-auto px-5 pt-6 flex flex-col gap-4">
+
+      <section class="col-span-2 h-screen overflow-y-auto px-6 pt-6 flex flex-col gap-4">
         <div
           v-for="(song, index) in songs"
           :key="song.name"
-          class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-lg flex items-center justify-start transition">
+          class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-xl flex items-center gap-4 transition cursor-pointer">
           <img
             draggable="false"
             :src="nowPlaying?.path === song.path && isPlaying ? pauseIcon : playIcon"
-            class="w-12 h-12 mr-4 cursor-pointer select-none"
+            class="w-12 h-12 cursor-pointer select-none"
             @click.stop="selectSong(index)" />
-          <span :class="['text-lg truncate font-bold select-none', nowPlaying?.path === song.path ? 'text-[#ea580c]' : 'text-white']">
-            {{ song.name.replace(/\.mp3$/, '') }}
-          </span>
+
+          <div class="flex flex-col overflow-hidden">
+            <template v-if="song.name.includes('-')">
+              <span
+                :class="['truncate font-semibold text-lg select-none', nowPlaying?.path === song.path ? 'text-[#ea580c]' : 'text-white']">
+                {{
+                  song.name
+                    .replace(/\.mp3$/, '')
+                    .split('-')[0]
+                    .trim()
+                }}
+              </span>
+              <span class="truncate text-sm text-gray-400 select-none">
+                {{
+                  song.name
+                    .replace(/\.mp3$/, '')
+                    .split('-')
+                    .slice(1)
+                    .join('-')
+                    .trim()
+                }}
+              </span>
+            </template>
+
+            <template v-else>
+              <span
+                :class="['truncate font-semibold text-lg select-none', nowPlaying?.path === song.path ? 'text-[#ea580c]' : 'text-white']">
+                {{ song.name.replace(/\.mp3$/, '').trim() }}
+              </span>
+              <span class="truncate text-sm text-gray-400 select-none"> Unnamed Artist </span>
+            </template>
+          </div>
+        </div>
+      </section>
+
+      <section class="col-span-1 border-l border-stone-800 h-screen overflow-y-auto p-4 flex flex-col gap-3">
+        <div
+          class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-3 rounded-xl cursor-pointer select-none flex items-center justify-center text-center font-semibold transition-colors"
+          @click="refreshApp">
+          Refresh
         </div>
       </section>
     </main>
@@ -35,7 +72,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { playIcon, pauseIcon, refresh } from '../composables/Icons.js';
+import { playIcon, pauseIcon } from '../composables/Icons.js';
 import {
   songs,
   currentSongIndex,
@@ -72,7 +109,6 @@ async function selectSong(index) {
     else await playAudio();
     return;
   }
-
   currentSongIndex.value = index;
   shouldAutoPlay.value = true;
   activePlaylist.value = songs.value.slice();
@@ -90,6 +126,10 @@ async function selectFolder(path) {
   currentSongIndex.value = idx >= 0 ? idx : -1;
   lastFolder.value = folder.value;
 }
+
+const refreshApp = async () => {
+  await window.electronAPI.refreshApp();
+};
 </script>
 
 <style scoped>

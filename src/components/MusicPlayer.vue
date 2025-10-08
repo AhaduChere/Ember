@@ -3,7 +3,15 @@
   <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
     <div class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icon" class="w-16 h-16 rounded select-none" />
-      <span class="truncate max-w-xs select-none">{{ nowPlaying?.name || '' }}</span>
+      <span class="truncate max-w-xs select-none whitespace-pre-line">
+        <span class="font-semibold">
+          {{ (nowPlaying?.name || '').split('-')[0] }}
+        </span>
+        <template v-if="(nowPlaying?.name || '').includes('-')">
+          <br />
+          <span class="text-sm text-gray-400"> by {{ (nowPlaying?.name || '').split('-').slice(1).join('-') }} </span>
+        </template>
+      </span>
     </div>
     <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
       <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2 select-none">
@@ -12,7 +20,6 @@
       <VueSlider
         v-model="sliderValue"
         class="focus:outline-none flex-none"
-        :disabled="sliderValue == 0"
         :height="4"
         :style="{ width: '40%' }"
         :min="0"

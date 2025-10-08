@@ -4,9 +4,9 @@ import started from 'electron-squirrel-startup';
 import { checkMusicFolder, openFolderDialog, LoadSongs, getMp3Buffer, getFolders } from './utils/FolderSetup.js';
 
 if (started) app.quit();
-
+let mainWindow;
 const createWindow = () => {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     fullscreen: false,
     resizable: true,
     height: 600,
@@ -31,7 +31,7 @@ const createWindow = () => {
   return mainWindow;
 };
 
-// Menu.setApplicationMenu(null);
+Menu.setApplicationMenu(null);
 app.whenReady().then(() => {
   createWindow();
 
@@ -49,3 +49,10 @@ ipcMain.handle('open-folder-dialog', () => openFolderDialog());
 ipcMain.handle('load-songs', (_, folder) => LoadSongs(folder));
 ipcMain.handle('get-mp3-buffer', (_, filePath) => getMp3Buffer(filePath));
 ipcMain.handle('get-folders', (_, folder) => getFolders(folder));
+ipcMain.handle('refresh-app', () => {
+  if (mainWindow) {
+    mainWindow.reload();
+    return true;
+  }
+  return false;
+});
