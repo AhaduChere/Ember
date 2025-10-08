@@ -15,19 +15,20 @@ export const currentShuffleIcon = ref(shuffleOffIcon);
 export const currentLoopIcon = ref(notLoopIcon);
 export const folder = ref(null);
 export const folders = ref([]);
+export const nowPlaying = ref(null);
+export const activePlaylist = ref([]);
 
 let audioRef = null;
 
 export function setAudioRef(r) {
   audioRef = r;
 }
-
 export function setSongs(arr) {
   songs.value = arr;
 }
 
-export async function loadSong(index) {
-  if (songs.value.length === 0) {
+export async function loadSong(index, playlist = songs.value) {
+  if (!playlist.length) {
     audioSrc.value = '';
     return;
   }
@@ -36,10 +37,12 @@ export async function loadSong(index) {
     audioRef.value.pause();
     audioRef.value.currentTime = 0;
   }
-  const buffer = await window.electronAPI.getMp3Buffer(songs.value[index].path);
-  const blob = new Blob([new Uint8Array(buffer)], { type: 'audio/mp3' });
-  audioSrc.value = URL.createObjectURL(blob);
+
+  const buffer = await window.electronAPI.getMp3Buffer(playlist[index].path);
+  audioSrc.value = URL.createObjectURL(new Blob([new Uint8Array(buffer)], { type: 'audio/mp3' }));
   sliderValue.value = 0;
+  nowPlaying.value = playlist[index];
+
   if (shouldAutoPlay.value) {
     try {
       await audioRef.value.play();
@@ -47,42 +50,6 @@ export async function loadSong(index) {
       currentPlayIcon.value = pauseIcon;
     } catch {}
   }
-}
-
-export function playNext() {
-  if (songs.value.length === 0) return;
-  if (isShuffling.value) {
-    let next;
-    do {
-      next = Math.floor(Math.random() * songs.value.length);
-    } while (next === currentSongIndex.value && songs.value.length > 1);
-    currentSongIndex.value = next;
-  } else if (loopMode.value === 2) {
-  } else {
-    currentSongIndex.value = (currentSongIndex.value + 1) % songs.value.length;
-  }
-  shouldAutoPlay.value = true;
-  loadSong(currentSongIndex.value);
-}
-
-export function playPrevious() {
-  if (songs.value.length === 0 || !audioRef?.value) return;
-
-  if (audioRef.value.currentTime > 3 || (currentSongIndex.value === 0 && loopMode.value != 1 && !isShuffling.value)) {
-    audioRef.value.currentTime = 0;
-    return;
-  }
-  if (isShuffling.value) {
-    let next;
-    do {
-      next = Math.floor(Math.random() * songs.value.length);
-    } while (next === currentSongIndex.value && songs.value.length > 1);
-    currentSongIndex.value = next;
-  } else {
-    currentSongIndex.value = (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
-  }
-  shouldAutoPlay.value = true;
-  loadSong(currentSongIndex.value);
 }
 
 export async function playAudio() {
@@ -96,7 +63,6 @@ export async function playAudio() {
     currentPlayIcon.value = playIcon;
   }
 }
-
 export function pauseAudio() {
   if (!audioRef?.value) return;
   audioRef.value.pause();
@@ -105,66 +71,54 @@ export function pauseAudio() {
 }
 
 export function togglePlayback() {
-  if (!audioRef?.value) return;
-  if (isPlaying.value) {
-    pauseAudio();
-    shouldAutoPlay.value = false;
-  } else {
-    playAudio();
-    shouldAutoPlay.value = true;
-  }
+  isPlaying.value ? pauseAudio() : playAudio();
+  shouldAutoPlay.value = isPlaying.value;
 }
-
 export function toggleShuffle() {
   isShuffling.value = !isShuffling.value;
   currentShuffleIcon.value = isShuffling.value ? shuffleOnIcon : shuffleOffIcon;
 }
-
 export function toggleLoop() {
   loopMode.value = (loopMode.value + 1) % 3;
-  if (loopMode.value === 0) {
-    currentLoopIcon.value = notLoopIcon;
-    if (audioRef?.value) audioRef.value.loop = false;
-  } else if (loopMode.value === 1) {
-    currentLoopIcon.value = loopIcon;
-    if (audioRef?.value) audioRef.value.loop = false;
-  } else if (loopMode.value === 2) {
-    currentLoopIcon.value = loopSingleIcon;
-    if (audioRef?.value) audioRef.value.loop = true;
+  currentLoopIcon.value = loopMode.value === 0 ? notLoopIcon : loopMode.value === 1 ? loopIcon : loopSingleIcon;
+  if (audioRef?.value) audioRef.value.loop = loopMode.value === 2;
+}
+
+export function playNext() {
+  if (!activePlaylist.value.length) return;
+  currentSongIndex.value = isShuffling.value
+    ? Math.floor(Math.random() * activePlaylist.value.length)
+    : (currentSongIndex.value + 1) % activePlaylist.value.length;
+  shouldAutoPlay.value = true;
+  loadSong(currentSongIndex.value, activePlaylist.value);
+}
+
+export function playPrevious() {
+  if (!songs.value.length || !audioRef?.value) return;
+  if (audioRef.value.currentTime > 3) {
+    audioRef.value.currentTime = 0;
+    return;
   }
+  currentSongIndex.value = isShuffling.value
+    ? Math.floor(Math.random() * songs.value.length)
+    : (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
+  shouldAutoPlay.value = true;
+  loadSong(currentSongIndex.value);
 }
 
 export function onEnded() {
-  if (loopMode.value === 2) {
-    playAudio();
-  } else if (loopMode.value === 1) {
-    playNext();
-  } else if (isShuffling.value) {
-    playNext();
-  } else {
-    isPlaying.value = false;
-    currentPlayIcon.value = playIcon;
-  }
+  (loopMode.value === 2 ? playAudio() : loopMode.value === 1 || isShuffling.value ? playNext() : (isPlaying.value = false),
+    (currentPlayIcon.value = playIcon));
 }
-
 export function onTimeUpdate() {
-  if (audioRef?.value) {
-    sliderValue.value = audioRef.value.currentTime;
-  }
+  if (audioRef?.value) sliderValue.value = audioRef.value.currentTime;
 }
-
 export function onLoadedMetadata() {
   if (audioRef?.value) {
     duration.value = Math.floor(audioRef.value.duration || 0);
-    if (shouldAutoPlay.value) {
-      playAudio();
-      shouldAutoPlay.value = false;
-    }
+    if (shouldAutoPlay.value) (playAudio(), (shouldAutoPlay.value = false));
   }
 }
-
 export function onSliderChange(val) {
-  if (audioRef?.value) {
-    audioRef.value.currentTime = val;
-  }
+  if (audioRef?.value) audioRef.value.currentTime = val;
 }

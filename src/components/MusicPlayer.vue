@@ -3,7 +3,7 @@
   <div class="w-screen h-25 bg-neutral-950 fixed bottom-0">
     <div class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icon" class="w-16 h-16 rounded select-none" />
-      <span class="truncate max-w-xs select-none">{{ songs[currentSongIndex]?.name || '' }}</span>
+      <span class="truncate max-w-xs select-none">{{ nowPlaying?.name || '' }}</span>
     </div>
     <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
       <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2 select-none">
@@ -22,8 +22,6 @@
         :dot-size="hovering || dragging ? 10 : 0"
         :dot-style="{ backgroundColor: '#ea580c' }"
         :process-style="{ backgroundColor: '#ea580c' }"
-        :contained="false"
-        :use-keyboard="false"
         @mouseenter="hovering = true"
         @mouseleave="hovering = false"
         @drag-start="dragging = true"
@@ -31,45 +29,12 @@
         @change="onSliderChange" />
       <span class="text-white truncate text-left max-w-[20%] flex-grow pl-2 select-none">{{ formatTime(duration) }}</span>
     </div>
-
-    <div class="contents">
-      <div class="flex justify-center items-stretch">
-        <img
-          draggable="false"
-          :src="currentLoopIcon"
-          alt="LoopButton"
-          class="w-8 h-12 cursor-pointer hover:brightness-[0.90] object-contain select-none mr-2"
-          style="pointer-events: auto"
-          @click="toggleLoop" />
-        <img
-          draggable="false"
-          :src="skipPreviousIcon"
-          alt="PreviousButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] object-contain select-none mr-2"
-          style="pointer-events: auto"
-          @click="playPrevious" />
-        <img
-          draggable="false"
-          :src="currentPlayIcon"
-          alt="PlaybackButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] object-contain select-none"
-          style="pointer-events: auto"
-          @click="togglePlayback" />
-        <img
-          draggable="false"
-          :src="skipNextIcon"
-          alt="SkipButton"
-          class="w-12 h-12 cursor-pointer hover:brightness-[0.90] object-contain select-none ml-2"
-          style="pointer-events: auto"
-          @click="playNext" />
-        <img
-          draggable="false"
-          :src="currentShuffleIcon"
-          alt="ShuffleButton"
-          class="w-8 h-12 cursor-pointer hover:brightness-[0.90] object-contain select-none ml-2"
-          style="pointer-events: auto"
-          @click="toggleShuffle" />
-      </div>
+    <div class="flex justify-center items-stretch mt-2">
+      <img :src="currentLoopIcon" class="w-8 h-12 cursor-pointer select-none mr-2" @click="toggleLoop" />
+      <img :src="skipPreviousIcon" class="w-12 h-12 cursor-pointer select-none mr-2" @click="playPrevious" />
+      <img :src="currentPlayIcon" class="w-12 h-12 cursor-pointer select-none" @click="togglePlayback" />
+      <img :src="skipNextIcon" class="w-12 h-12 cursor-pointer select-none ml-2" @click="playNext" />
+      <img :src="currentShuffleIcon" class="w-8 h-12 cursor-pointer select-none ml-2" @click="toggleShuffle" />
     </div>
     <div class="fixed right-2 bottom-8 flex items-center w-[20vw] max-w-70">
       <img :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto rounded select-none mr-3" />
@@ -116,6 +81,7 @@ import {
   sliderValue,
   folder,
   folders,
+  nowPlaying,
 } from '../composables/Songs.js';
 
 const audioRef = ref(null);
@@ -126,11 +92,7 @@ const volume = ref(50);
 onMounted(() => {
   setAudioRef(audioRef);
   setup();
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') {
-      togglePlayback();
-    }
-  });
+  window.addEventListener('keydown', (e) => e.code === 'Space' && togglePlayback());
 });
 
 watch(volume, (val) => {
@@ -139,29 +101,20 @@ watch(volume, (val) => {
 
 async function setup() {
   const allFolders = await window.electronAPI.getFolders(folder.value);
-
-  if (allFolders.length > 0) {
-    folders.value = [folder.value, ...allFolders.filter((f) => f !== folder.value)];
-  }
+  if (allFolders.length > 0) folders.value = [folder.value, ...allFolders.filter((f) => f !== folder.value)];
 
   setSongs(await window.electronAPI.LoadSongs(folder.value));
-
-  if (songs.value.length > 0) {
-    await loadSong(currentSongIndex.value);
-  } else {
-    audioSrc.value = '';
-  }
+  if (songs.value.length > 0) await loadSong(currentSongIndex.value);
+  else audioSrc.value = '';
 }
 
 watch(audioSrc, async () => {
-  if (audioRef.value) {
-    audioRef.value.load();
-    if (isPlaying.value) {
-      try {
-        await audioRef.value.play();
-      } catch {}
-    }
-  }
+  if (!audioRef.value) return;
+  audioRef.value.load();
+  if (isPlaying.value)
+    try {
+      await audioRef.value.play();
+    } catch {}
 });
 
 function formatTime(sec) {
