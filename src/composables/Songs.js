@@ -94,16 +94,16 @@ export function playNext() {
 }
 
 export function playPrevious() {
-  if (!songs.value.length || !audioRef?.value) return;
+  if (!activePlaylist.value.length || !audioRef?.value) return;
   if (audioRef.value.currentTime > 3) {
     audioRef.value.currentTime = 0;
     return;
   }
   currentSongIndex.value = isShuffling.value
-    ? Math.floor(Math.random() * songs.value.length)
-    : (currentSongIndex.value - 1 + songs.value.length) % songs.value.length;
+    ? Math.floor(Math.random() * activePlaylist.value.length)
+    : (currentSongIndex.value - 1 + activePlaylist.value.length) % activePlaylist.value.length;
   shouldAutoPlay.value = true;
-  loadSong(currentSongIndex.value);
+  loadSong(currentSongIndex.value, activePlaylist.value);
 }
 
 export function onEnded() {

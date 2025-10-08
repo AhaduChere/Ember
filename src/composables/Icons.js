@@ -9,6 +9,7 @@ import shuffleOffIcon from '../assets/not_Shuffling.svg?url';
 import shuffleOnIcon from '../assets/Shuffling.svg?url';
 import audioOn from '../assets/Audio-On.svg';
 import audioOff from '../assets/Audio-Off.svg';
+import refresh from '../assets/Refresh.svg';
 
 const icons = [
   playIcon,
@@ -22,6 +23,7 @@ const icons = [
   shuffleOnIcon,
   audioOn,
   audioOff,
+  refresh,
 ];
 
 icons.forEach((src) => {
@@ -41,4 +43,5 @@ export {
   shuffleOnIcon,
   audioOff,
   audioOn,
+  refresh,
 };

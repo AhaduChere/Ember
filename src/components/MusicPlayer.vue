@@ -12,7 +12,7 @@
       <VueSlider
         v-model="sliderValue"
         class="focus:outline-none flex-none"
-        :disabled="sliderValue == null"
+        :disabled="sliderValue == 0"
         :height="4"
         :style="{ width: '40%' }"
         :min="0"
@@ -58,7 +58,6 @@ import { ref, onMounted, watch } from 'vue';
 import { skipNextIcon, skipPreviousIcon, audioOn, audioOff } from '../composables/Icons.js';
 import Icon from '../assets/Icon.png';
 import {
-  songs,
   currentSongIndex,
   audioSrc,
   loadSong,
@@ -103,9 +102,14 @@ async function setup() {
   const allFolders = await window.electronAPI.getFolders(folder.value);
   if (allFolders.length > 0) folders.value = [folder.value, ...allFolders.filter((f) => f !== folder.value)];
 
-  setSongs(await window.electronAPI.LoadSongs(folder.value));
-  if (songs.value.length > 0) await loadSong(currentSongIndex.value);
-  else audioSrc.value = '';
+  const loadedSongs = await window.electronAPI.LoadSongs(folder.value);
+  setSongs(loadedSongs);
+
+  if (loadedSongs.length > 0 && loadedSongs[currentSongIndex.value]) {
+    await loadSong(currentSongIndex.value);
+  } else {
+    audioSrc.value = '';
+  }
 }
 
 watch(audioSrc, async () => {
