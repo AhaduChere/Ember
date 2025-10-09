@@ -1,10 +1,11 @@
 <template>
   <div class="bg-[#121212] text-white min-h-screen">
-    <main class="grid grid-cols-4 h-full overflow-clip">
+    <main class="grid lg:grid-cols-8 grid-cols-4 h-full overflow-clip">
       <section
         class="col-span-1 border-r border-stone-800 overflow-y-auto scrollbar-hidden p-4 flex flex-col gap-3"
         :style="{ height: 'calc(100vh - 6rem)' }">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 gap-6">
+          <h2 class="text-2xl font-bold text-[#ea580c] select-none text-center">Folders</h2>
           <div
             v-for="folderItem in folders"
             :key="folderItem"
@@ -23,7 +24,10 @@
         </div>
       </section>
 
-      <section class="col-span-2 overflow-y-auto scrollbar-hidden px-6 pt-4 flex flex-col gap-4" :style="{ height: 'calc(100vh - 7rem)' }">
+      <section
+        class="lg:col-span-5 col-span-2 overflow-y-auto scrollbar-hidden px-6 pt-4 flex flex-col gap-4"
+        :style="{ height: 'calc(100vh - 7rem)' }">
+        <h2 class="text-2xl font-bold text-[#ea580c] select-none text-center">Songs</h2>
         <div
           v-for="(song, index) in songs"
           :key="song.name"
@@ -72,8 +76,9 @@
       </section>
 
       <section
-        class="col-span-1 border-l border-stone-800 overflow-y-auto p-4 flex flex-col gap-3"
+        class="lg:col-span-2 md:col-span-1 border-l border-stone-800 overflow-y-auto p-4 flex flex-col gap-3"
         :style="{ height: 'calc(100vh - 8rem)' }">
+        <h2 class="text-2xl font-bold text-[#ea580c] select-none text-center">Options</h2>
         <div
           class="bg-[#1f1f1f] hover:bg-[#2a2a2a] p-3 rounded-xl cursor-pointer select-none flex items-center justify-center text-center font-semibold transition-colors"
           @click="refreshApp">
