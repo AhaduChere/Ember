@@ -19,10 +19,12 @@ export const nowPlaying = ref(null);
 export const activePlaylist = ref([]);
 
 let audioRef = null;
+export const volume = ref(50);
 
 export function setAudioRef(r) {
   audioRef = r;
 }
+
 export function setSongs(arr) {
   songs.value = arr;
 }

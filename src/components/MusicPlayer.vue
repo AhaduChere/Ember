@@ -1,13 +1,17 @@
 <template>
   <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
   <div class="w-screen h-24 bg-neutral-950 fixed bottom-0">
-    <div class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
+    <div v-show="nowPlaying" class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icon" class="w-16 h-auto rounded select-none" />
-      <span class="truncate select-none whitespace-pre-line overflow-ellipsis w-[16vw]">
-        {{ (nowPlaying?.name || '').split('-')[0] }}
-        <template v-if="(nowPlaying?.name || '').includes('-')">
+      <span v-if="nowPlaying?.name" class="truncate select-none whitespace-pre-line overflow-ellipsis w-[15vw]">
+        {{ nowPlaying.name.split('-')[0] }}
+        <template v-if="nowPlaying.name.includes('-')">
           <br />
-          <span class="text-sm text-gray-400"> by {{ (nowPlaying?.name || '').split('-').slice(1).join('-') }} </span>
+          <span class="text-sm text-gray-400">by {{ nowPlaying.name.split('-').slice(1).join('-').trim() }}</span>
+        </template>
+        <template v-else>
+          <br />
+          <span class="text-sm text-gray-400">by Unnamed Artist</span>
         </template>
       </span>
     </div>
@@ -18,13 +22,13 @@
       <VueSlider
         v-model="sliderValue"
         class="focus:outline-none flex-none"
+        tooltip="none"
         :disabled="sliderValue == 0"
         :height="4"
         :style="{ width: '40%' }"
         :min="0"
         :max="duration"
         :interval="1"
-        tooltip="none"
         :dot-size="hovering || dragging ? 10 : 0"
         :dot-style="{ backgroundColor: '#ea580c' }"
         :process-style="{ backgroundColor: '#ea580c' }"
@@ -36,24 +40,11 @@
       <span class="text-white truncate text-left max-w-[20%] flex-grow pl-2 select-none">{{ formatTime(duration) }}</span>
     </div>
     <div class="flex justify-center items-stretch mb-2">
-      <img :src="currentLoopIcon" class="w-8 h-12 cursor-pointer select-none mr-2" @click="toggleLoop" />
-      <img :src="skipPreviousIcon" class="w-12 h-12 cursor-pointer select-none mr-2" @click="playPrevious" />
-      <img :src="currentPlayIcon" class="w-12 h-12 cursor-pointer select-none" @click="togglePlayback" />
-      <img :src="skipNextIcon" class="w-12 h-12 cursor-pointer select-none ml-2" @click="playNext" />
-      <img :src="currentShuffleIcon" class="w-8 h-12 cursor-pointer select-none ml-2" @click="toggleShuffle" />
-    </div>
-    <div class="fixed right-2 bottom-8 flex items-center w-[20vw] max-w-70">
-      <img :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto rounded select-none mr-3" />
-      <VueSlider
-        v-model="volume"
-        :min="0"
-        :max="100"
-        :height="6"
-        :dot-size="14"
-        :process-style="{ backgroundColor: '#ea580c' }"
-        :rail-style="{ backgroundColor: '#4B5563' }"
-        :tooltip="'none'"
-        class="flex-1 mr-4" />
+      <img draggable="false" :src="currentLoopIcon" class="w-8 h-12 cursor-pointer select-none mr-2" @click="toggleLoop" />
+      <img draggable="false" :src="skipPreviousIcon" class="w-12 h-12 cursor-pointer select-none mr-2" @click="playPrevious" />
+      <img draggable="false" :src="currentPlayIcon" class="w-12 h-12 cursor-pointer select-none" @click="togglePlayback" />
+      <img draggable="false" :src="skipNextIcon" class="w-12 h-12 cursor-pointer select-none ml-2" @click="playNext" />
+      <img draggable="false" :src="currentShuffleIcon" class="w-8 h-12 cursor-pointer select-none ml-2" @click="toggleShuffle" />
     </div>
   </div>
 </template>
@@ -61,7 +52,7 @@
 <script setup>
 import VueSlider from 'vue-3-slider-component';
 import { ref, onMounted, watch } from 'vue';
-import { skipNextIcon, skipPreviousIcon, audioOn, audioOff } from '../composables/Icons.js';
+import { skipNextIcon, skipPreviousIcon } from '../composables/Icons.js';
 import Icon from '../assets/Icon.png';
 import {
   currentSongIndex,
@@ -87,12 +78,12 @@ import {
   folder,
   folders,
   nowPlaying,
+  volume,
 } from '../composables/Songs.js';
 
 const audioRef = ref(null);
 const hovering = ref(false);
 const dragging = ref(false);
-const volume = ref(50);
 
 onMounted(() => {
   setAudioRef(audioRef);

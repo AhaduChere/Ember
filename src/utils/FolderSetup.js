@@ -31,5 +31,5 @@ export function getMp3Buffer(filePath) {
 
 export function getFolders(folder) {
   const items = fs.readdirSync(folder, { withFileTypes: true });
-  return items.filter((item) => item.isDirectory()).map((dir) => path.join(folder, dir.name));
+  return items.filter((item) => item.isDirectory() && item.name.toLowerCase() !== 'img').map((dir) => path.join(folder, dir.name));
 }
