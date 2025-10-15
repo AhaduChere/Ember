@@ -23,7 +23,7 @@
         v-model="sliderValue"
         class="focus:outline-none flex-none"
         tooltip="none"
-        :disabled="sliderValue == 0"
+        :disabled="!nowPlaying"
         :height="4"
         :style="{ width: '40%' }"
         :min="0"
@@ -92,7 +92,7 @@ onMounted(() => {
 });
 
 watch(volume, (val) => {
-  if (audioRef.value) audioRef.value.volume = val / 100;
+  if (audioRef.value) audioRef.value.volume = val / 120; //feels more accurate then 100
 });
 
 async function setup() {
