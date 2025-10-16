@@ -40,7 +40,7 @@
             @click.stop="selectSong(index)" />
 
           <template v-if="song.name.includes('-')">
-            <div class="flex justify-between items-center w-full">
+            <div class="flex flex-col overflow-hidden">
               <span
                 :class="['truncate font-semibold text-lg select-none', nowPlaying?.path === song.path ? 'text-[#ea580c]' : 'text-white']">
                 {{
@@ -50,7 +50,7 @@
                     .trim()
                 }}
               </span>
-              <span class="truncate text-sm text-gray-400 select-none ml-4 text-right">
+              <span class="truncate text-sm text-gray-400 select-none">
                 {{
                   song.name
                     .replace(/\.mp3$/, '')
@@ -61,6 +61,7 @@
                 }}
               </span>
             </div>
+            <span class="text-sm text-gray-400 select-none ml-auto">Put song length here</span>
           </template>
 
           <template v-else>
