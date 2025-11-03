@@ -18,7 +18,7 @@ window.addEventListener('keydown', (e) => {
 contextBridge.exposeInMainWorld('electronAPI', {
   checkMusicFolder: () => ipcRenderer.invoke('check-folder'),
   openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
-  LoadSongs: (folder) => ipcRenderer.invoke('load-songs', folder),
+  LoadSongs: (filepath) => ipcRenderer.invoke('load-songs', filepath),
   getMp3Buffer: (filePath) => ipcRenderer.invoke('get-mp3-buffer', filePath),
   getFolders: (folder) => ipcRenderer.invoke('get-folders', folder),
   refreshApp: () => ipcRenderer.invoke('refresh-app'),

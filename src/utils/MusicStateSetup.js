@@ -20,13 +20,23 @@ export function getMp3Buffer(filePath) {
   return fs.readFileSync(filePath);
 }
 
-export function LoadSongs(folder) {
-  const files = fs.readdirSync(folder);
-  const mp3s = files.filter((file) => file.endsWith('.mp3'));
-  return mp3s.map((file) => ({
-    name: path.parse(file).name,
-    path: path.join(folder, file),
-  }));
+export function LoadSongs(filepath) {
+  if (filepath.endsWith('.mp3')) {
+    const folder = path.dirname(filepath)
+    const files = fs.readdirSync(folder);
+    const mp3s = files.filter((file) => file.endsWith('.mp3'));
+    return mp3s.map((file) => ({
+      name: path.parse(file).name.split('-')[0]?.trim(),
+      artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
+      path: path.join(folder, file),
+    }));
+  } else {
+    const files = fs.readdirSync(filepath);
+    const mp3s = files.filter((file) => file.endsWith('.mp3'));
+    return mp3s.map((file) => ({
+      path: path.join(filepath, file),
+    }));
+  }
 }
 
 export function getFolders(folder) {
