@@ -4,7 +4,14 @@
       <section
         class="col-span-1 border-r border-stone-800 overflow-y-auto p-4 flex flex-col gap-3"
         :style="{ height: 'calc(100vh - 6rem)' }">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <button
+          class="bg-[#1f1f1f] cursor-pointer hover:bg-[#2a2a2a] gap-3 flex p-4 rounded-xl font-semibold transition-colors shadow-md select-none justify-center"
+          @click="refreshApp">
+          <img draggable="false" :src="refresh" class="w-8 h-auto select-none" />
+          <p class="pt-0.5">Refresh</p>
+        </button>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
           <div
             v-for="folderItem in folders"
             :key="folderItem"
@@ -15,7 +22,7 @@
               <span class="text-9xl text-[#ea580c] font-bold select-none"> ♪ </span>
             </div>
             <div class="p-4 text-center">
-              <span class="block text-base font-semibold truncate text-gray-200">
+              <span class="block text-base font-semibold truncate text-gray-200 select-none">
                 {{ folderItem.split('/').pop() }}
               </span>
             </div>
@@ -76,12 +83,6 @@
       <section
         class="col-span-1 border-l border-stone-800 overflow-y-auto p-6 flex flex-col gap-6"
         :style="{ height: 'calc(100vh - 8rem)' }">
-        <button
-          class="bg-[#1f1f1f] cursor-pointer hover:bg-[#2a2a2a] flex items-center justify-center gap-3 p-4 rounded-xl font-semibold transition-colors shadow-md select-none"
-          @click="refreshApp">
-          <img draggable="false" :src="refresh" class="w-8 h-auto select-none" />
-          Refresh
-        </button>
         <div class="flex items-center gap-4 mt-4">
           <img draggable="false" :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto select-none" />
           <VueSlider
@@ -89,7 +90,7 @@
             :min="0"
             :max="100"
             :height="6"
-            :dot-size="14"
+            :dot-size="10"
             :process-style="{ backgroundColor: '#ea580c' }"
             :rail-style="{ backgroundColor: '#4B5563' }"
             :tooltip="'none'"

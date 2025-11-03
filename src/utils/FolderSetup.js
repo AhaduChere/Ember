@@ -16,6 +16,10 @@ export async function openFolderDialog() {
   return result.filePaths[0] || null;
 }
 
+export function getMp3Buffer(filePath) {
+  return fs.readFileSync(filePath);
+}
+
 export function LoadSongs(folder) {
   const files = fs.readdirSync(folder);
   const mp3s = files.filter((file) => file.endsWith('.mp3'));
@@ -23,10 +27,6 @@ export function LoadSongs(folder) {
     name: path.parse(file).name,
     path: path.join(folder, file),
   }));
-}
-
-export function getMp3Buffer(filePath) {
-  return fs.readFileSync(filePath);
 }
 
 export function getFolders(folder) {

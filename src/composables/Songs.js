@@ -50,7 +50,7 @@ export async function loadSong(index, playlist = songs.value) {
       await audioRef.value.play();
       isPlaying.value = true;
       currentPlayIcon.value = pauseIcon;
-    } catch {}
+    } catch { }
   }
 }
 

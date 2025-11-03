@@ -1,6 +1,6 @@
 <template>
   <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
-  <div class="w-screen h-24 bg-neutral-950 fixed bottom-0">
+  <div class="w-screen h-24 bg-neutral-950 fixed bottom-0 border-t border-stone-800">
     <div v-show="nowPlaying" class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icon" class="w-16 h-auto rounded select-none" />
       <span v-if="nowPlaying?.name" class="truncate select-none whitespace-pre-line overflow-ellipsis w-[15vw]">
