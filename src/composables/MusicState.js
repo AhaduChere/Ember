@@ -2,8 +2,8 @@ import { ref } from 'vue';
 
 export class MusicState {
   constructor() {
-    this.MainFolder = ref({});
-    this.SubFolders = ref([]);
+    this.MainFolder = {};
+    this.SubFolders = [];
     this.IsPlaying = ref(false);
     this.CurrentState = ref({
       CurrentSong: { path: '', name: '', artist: '' },
@@ -12,16 +12,15 @@ export class MusicState {
   }
 
   async SetupMainFolder() {
-    this.MainFolder.value.path = await window.electronAPI.checkMusicFolder();
-    this.MainFolder.value.songs = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
-
+    this.MainFolder.path = await window.electronAPI.checkMusicFolder();
+    this.MainFolder.songs = await window.electronAPI.LoadSongs(this.MainFolder.path);
   }
 
   async SetupSubFolders() {
-    const array = await window.electronAPI.getFolders(this.MainFolder.value.path);
+    const array = await window.electronAPI.getFolders(this.MainFolder.path);
     for (let i = 0; i < array.length; i++) {
       const songs = await window.electronAPI.LoadSongs(array[i]);
-      this.SubFolders.value.push({ path: array[i], songs: songs });
+      this.SubFolders.push({ path: array[i], songs: songs });
     }
   }
 
@@ -30,13 +29,16 @@ export class MusicState {
       try {
         this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(path);
         this.CurrentState.value.CurrentSong.path = path;
-        this.CurrentState.value.CurrentSong.name = this.CurrentState.value.CurrentPlaylist.find(song => song.path === this.CurrentState.value.CurrentSong.path)?.name || 'Unknown';
-        this.CurrentState.value.CurrentSong.artist = this.CurrentState.value.CurrentPlaylist.find(song => song.path === this.CurrentState.value.CurrentSong.path)?.artist || 'Unknown';
+        this.CurrentState.value.CurrentSong.name =
+          this.CurrentState.value.CurrentPlaylist.find((song) => song.path === this.CurrentState.value.CurrentSong.path)?.name || 'Unknown';
+        this.CurrentState.value.CurrentSong.artist =
+          this.CurrentState.value.CurrentPlaylist.find((song) => song.path === this.CurrentState.value.CurrentSong.path)?.artist ||
+          'Unknown';
       } catch (error) {
         alert('Could not Start Playback' + error);
       }
     } else {
-      this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(path)
+      this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(path);
     }
   }
 }
