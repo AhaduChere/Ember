@@ -50,73 +50,56 @@
 </template>
 
 <script setup>
+import { MusicState } from '../composables/MusicState.js';
 import VueSlider from 'vue-3-slider-component';
-import { ref, onMounted, watch } from 'vue';
-import { skipNextIcon, skipPreviousIcon } from '../composables/Icons.js';
 import Icon from '../assets/Icon.png';
+import { ref, onMounted } from 'vue';
 import {
-  currentSongIndex,
-  audioSrc,
-  loadSong,
-  setSongs,
-  setAudioRef,
-  currentLoopIcon,
-  currentPlayIcon,
-  currentShuffleIcon,
-  isPlaying,
-  duration,
-  playNext,
-  playPrevious,
-  togglePlayback,
-  toggleShuffle,
-  toggleLoop,
-  onEnded,
-  onTimeUpdate,
-  onLoadedMetadata,
-  onSliderChange,
-  sliderValue,
-  folder,
-  folders,
-  nowPlaying,
-  volume,
-} from '../composables/Songs.js';
+  skipNextIcon,
+  skipPreviousIcon,
+  playIcon,
+  pauseIcon,
+  notLoopIcon,
+  loopIcon,
+  loopSingleIcon,
+  shuffleOffIcon,
+  shuffleOnIcon,
+} from '../composables/Icons.js';
 
-const audioRef = ref(null);
-const hovering = ref(false);
-const dragging = ref(false);
+const currentPlayIcon = ref(playIcon);
+const currentShuffleIcon = ref(shuffleOffIcon);
+const currentLoopIcon = ref(notLoopIcon);
+const playbackState = ref(0);
+const sliderValue = ref(0);
 
 onMounted(() => {
-  setAudioRef(audioRef);
-  setup();
-  window.addEventListener('keydown', (e) => e.code === 'Space' && togglePlayback());
+  const musicState = new MusicState();
 });
 
-watch(volume, (val) => {
-  if (audioRef.value) audioRef.value.volume = val / 120; //feels more accurate then 100
-});
+const togglePlayback = () => {
+  if (playbackState.value === 0 || playbackState.value === 1) {
+    playbackState.value = 2;
 
-async function setup() {
-  const allFolders = await window.electronAPI.getFolders(folder.value);
-  if (allFolders.length > 0) folders.value = [folder.value, ...allFolders.filter((f) => f !== folder.value)];
+    currentPlayIcon.value = pauseIcon;
+  } else if (playbackState.value === 2) {
+    playbackState.value = 1;
 
-  const loadedSongs = await window.electronAPI.LoadSongs(folder.value);
-  setSongs(loadedSongs);
-
-  if (loadedSongs.length > 0 && loadedSongs[currentSongIndex.value]) {
-    await loadSong(currentSongIndex.value);
-  } else {
-    audioSrc.value = '';
+    currentPlayIcon.value = playIcon;
   }
-}
+};
 
-watch(audioSrc, async () => {
-  if (!audioRef.value) return;
-  audioRef.value.load();
-  if (isPlaying.value)
-    try {
-      await audioRef.value.play();
-    } catch {}
-});
+const toggleLoop = () => {
+  if (currentLoopIcon.value === notLoopIcon) {
+    currentLoopIcon.value = loopIcon;
+  } else if (currentLoopIcon.value === loopIcon) {
+    currentLoopIcon.value = loopSingleIcon;
+  } else {
+    currentLoopIcon.value = notLoopIcon;
+  }
+};
+const toggleShuffle = () => {
+  currentShuffleIcon.value = currentShuffleIcon.value === shuffleOffIcon ? shuffleOnIcon : shuffleOffIcon;
+};
 
 function formatTime(sec) {
   const m = Math.floor(sec / 60);
