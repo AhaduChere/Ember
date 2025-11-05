@@ -13,15 +13,13 @@ export class MusicState {
       CurrentPlaylist: { path: '', songs: [] },
     });
   }
-
   // Finds systems Music folder
-  async SetupMainFolder() {
+  async setupMainFolder() {
     this.MainFolder.value.path = await window.electronAPI.checkMusicFolder();
     this.MainFolder.value.songs = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
   }
-
   // Finds Subfolders within Music folder for playlists
-  async SetupSubFolders() {
+  async setupSubFolders() {
     const array = await window.electronAPI.getFolders(this.MainFolder.value.path);
     for (let i = 0; i < array.length; i++) {
       const songs = await window.electronAPI.LoadSongs(array[i]);
@@ -29,7 +27,7 @@ export class MusicState {
     }
   }
   // Update CurrentState method
-  async InitializeCurrentState() {
+  async initializeCurrentState() {
     this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
     this.CurrentState.value.CurrentPlaylist.path = this.MainFolder.value.path;
   }
@@ -46,6 +44,13 @@ export class MusicState {
         this.CurrentState.value.CurrentSong.artist =
           this.CurrentState.value.CurrentPlaylist.find((song) => song.path === this.CurrentState.value.CurrentSong.path)?.artist ||
           'Unknown';
+        this.CurrentState.value.CurrentSong.rawseconds =
+          this.CurrentState.value.CurrentPlaylist.find((song) => song.path === this.CurrentState.value.CurrentSong.path)?.rawseconds ||
+          'Unknown';
+
+        this.CurrentState.value.CurrentSong.duration =
+          this.CurrentState.value.CurrentPlaylist.find((song) => song.path === this.CurrentState.value.CurrentSong.path)?.duration ||
+          'Unknown';
       } catch (error) {
         alert('Could not Start Playback' + error);
       }
@@ -53,5 +58,9 @@ export class MusicState {
       this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(path);
       this.CurrentState.value.CurrentPlaylist.path = path;
     }
+  }
+
+  async togglePlayback() {
+    this.CurrentState.value.IsPlaying = !this.CurrentState.value.IsPlaying;
   }
 }

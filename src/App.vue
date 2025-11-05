@@ -12,8 +12,8 @@ const musicState = new MusicState();
 provide('musicState', musicState);
 
 onMounted(async () => {
-  await musicState.SetupMainFolder();
-  await musicState.SetupSubFolders();
-  await musicState.InitializeCurrentState();
+  await musicState.setupMainFolder();
+  await musicState.setupSubFolders();
+  await musicState.initializeCurrentState();
 });
 </script>

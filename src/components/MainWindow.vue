@@ -99,7 +99,7 @@
 <script setup>
 import { inject, computed } from 'vue';
 import Icons from '../composables/Icons.js';
-// import VueSlider from 'vue-3-slider-component';
+import VueSlider from 'vue-3-slider-component';
 
 const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');
@@ -118,7 +118,7 @@ async function selectSong(path) {
     musicState.CurrentState.value.IsPlaying = true;
     await musicState.updateCurrentState(path);
   } else {
-    musicState.CurrentState.value.IsPlaying = !musicState.CurrentState.value.IsPlaying;
+    musicState.togglePlayback();
   }
 }
 

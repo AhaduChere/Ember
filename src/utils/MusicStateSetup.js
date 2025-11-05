@@ -35,7 +35,7 @@ export function LoadSongs(filepath) {
         artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
         path: filePath,
         duration: formattedDuration,
-        testing: metadata.format.duration,
+        rawseconds: durationSec,
       };
     })
   );
