@@ -43,6 +43,7 @@ export default defineConfig([
         window: 'readonly',
         Blob: 'readonly',
         URL: 'readonly',
+        document: 'readonly',
       },
     },
     rules: {

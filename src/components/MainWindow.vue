@@ -69,7 +69,9 @@
             </span>
           </div>
 
-          <span class="text-sm text-gray-400 select-none ml-auto">Put song length here</span>
+          <span class="text-sm text-gray-400 select-none ml-auto">
+            {{ song.duration || 'Unknown Artist' }}
+          </span>
         </div>
       </section>
 

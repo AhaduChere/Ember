@@ -1,4 +1,5 @@
 import { app, dialog } from 'electron';
+import { parseFile } from 'music-metadata';
 import path from 'node:path';
 import fs from 'fs';
 
@@ -17,24 +18,27 @@ export function getMp3Buffer(filePath) {
 }
 
 export function LoadSongs(filepath) {
-  if (filepath.endsWith('.mp3')) {
-    const folder = path.dirname(filepath);
-    const files = fs.readdirSync(folder);
-    const mp3s = files.filter((file) => file.endsWith('.mp3'));
-    return mp3s.map((file) => ({
-      name: path.parse(file).name.split('-')[0]?.trim(),
-      artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
-      path: path.join(folder, file),
-    }));
-  } else {
-    const files = fs.readdirSync(filepath);
-    const mp3s = files.filter((file) => file.endsWith('.mp3'));
-    return mp3s.map((file) => ({
-      name: path.parse(file).name.split('-')[0]?.trim(),
-      artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
-      path: path.join(filepath, file),
-    }));
-  }
+  const folder = filepath.endsWith('.mp3') ? path.dirname(filepath) : filepath;
+  const files = fs.readdirSync(folder);
+  const mp3s = files.filter((file) => file.endsWith('.mp3'));
+  return Promise.all(
+    mp3s.map(async (file) => {
+      const filePath = path.join(folder, file);
+      const metadata = await parseFile(filePath);
+      const durationSec = Math.floor(metadata.format.duration || 0);
+      const minutes = Math.floor(durationSec / 60);
+      const seconds = durationSec % 60;
+      const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+      return {
+        name: path.parse(file).name.split('-')[0]?.trim(),
+        artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
+        path: filePath,
+        duration: formattedDuration,
+        testing: metadata.format.duration,
+      };
+    })
+  );
 }
 
 export function getFolders(folder) {
