@@ -3,12 +3,8 @@ import path from 'node:path';
 import fs from 'fs';
 
 export function checkMusicFolder() {
-  try {
-    const musicPath = app.getPath('music');
-    return fs.existsSync(musicPath) ? musicPath : null;
-  } catch {
-    return null;
-  }
+  const musicPath = app.getPath('music');
+  return fs.existsSync(musicPath) ? musicPath : null;
 }
 
 export async function openFolderDialog() {
@@ -22,7 +18,7 @@ export function getMp3Buffer(filePath) {
 
 export function LoadSongs(filepath) {
   if (filepath.endsWith('.mp3')) {
-    const folder = path.dirname(filepath)
+    const folder = path.dirname(filepath);
     const files = fs.readdirSync(folder);
     const mp3s = files.filter((file) => file.endsWith('.mp3'));
     return mp3s.map((file) => ({
@@ -34,6 +30,8 @@ export function LoadSongs(filepath) {
     const files = fs.readdirSync(filepath);
     const mp3s = files.filter((file) => file.endsWith('.mp3'));
     return mp3s.map((file) => ({
+      name: path.parse(file).name.split('-')[0]?.trim(),
+      artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
       path: path.join(filepath, file),
     }));
   }

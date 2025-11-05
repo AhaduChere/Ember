@@ -7,28 +7,20 @@
         <button
           class="bg-[#1f1f1f] cursor-pointer hover:bg-[#2a2a2a] gap-3 flex p-4 rounded-xl font-semibold transition-colors shadow-md select-none justify-center"
           @click="refreshApp">
-          <img draggable="false" :src="refresh" class="w-8 h-auto select-none" />
+          <!-- <img draggable="false" :src="refresh" class="w-8 h-auto select-none" /> -->
           <p class="pt-0.5">Refresh</p>
         </button>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
-          <div class="group bg-[#1f1f1f] rounded-xl cursor-pointer overflow-hidden transition-all shadow-md">
-            <div class="h-24 bg-[#1f1f1f] flex items-center justify-center">
-              <span class="text-9xl text-[#ea580c] font-bold select-none"> ♪ </span>
-            </div>
-            <div class="p-4 text-center">
-              <span class="block text-base font-semibold truncate text-gray-200 select-none">
-                {{ mainFolder.value }}
-              </span>
-            </div>
-          </div>
-
           <div
-            v-for="folder in subFolders"
+            v-for="folder in allFolders"
             :key="folder.path"
-            class="group bg-[#1f1f1f] rounded-xl cursor-pointer overflow-hidden transition-all shadow-md">
+            class="group bg-[#1f1f1f] rounded-xl cursor-pointer overflow-hidden transition-all shadow-md"
+            :class="[
+              currentstate.CurrentPlaylist?.path === folder.path ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : '',
+            ]">
             <div class="h-24 bg-[#1f1f1f] flex items-center justify-center">
-              <span class="text-9xl text-[#ea580c] font-bold select-none"> ♪ </span>
+              <span class="text-9xl text-[#ea580c] font-bold select-none">♪</span>
             </div>
             <div class="p-4 text-center">
               <span class="block text-base font-semibold truncate text-gray-200 select-none">
@@ -43,49 +35,32 @@
         class="col-span-2 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
         :style="{ height: 'calc(100vh - 7rem)' }">
         <div
-          v-for="(song, index) in songs"
-          :key="song.name"
+          v-for="song in currentstate.CurrentPlaylist || []"
+          :key="song.path"
           :class="[
-            'bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-xl flex items-center gap-4  cursor-pointer',
-            nowPlaying?.path === song.path ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : '',
+            'bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-xl flex items-center gap-4 cursor-pointer',
+            currentstate.CurrentSong?.path === song.path ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : '',
           ]">
           <img
             draggable="false"
-            :src="nowPlaying?.path === song.path && isPlaying ? pauseIcon : playIcon"
+            :src="currentstate.CurrentSong?.path === song.path && musicState.CurrentState.value.IsPlaying ? pauseIcon : playIcon"
             class="w-12 h-12 cursor-pointer select-none"
-            @click.stop="selectSong(index)" />
+            @click.stop="selectSong(song.path)" />
 
-          <template v-if="song.name.includes('-')">
-            <div class="flex flex-col overflow-hidden">
-              <span
-                :class="['truncate font-semibold text-lg select-none', nowPlaying?.path === song.path ? 'text-[#ea580c]' : 'text-white']">
-                {{
-                  song.name
-                    .replace(/\.mp3$/, '')
-                    .split('-')[0]
-                    .trim()
-                }}
-              </span>
-              <span class="truncate text-sm text-gray-400 select-none">
-                {{
-                  song.name
-                    .replace(/\.mp3$/, '')
-                    .split('-')
-                    .slice(1)
-                    .join('-')
-                    .trim()
-                }}
-              </span>
-            </div>
-            <span class="text-sm text-gray-400 select-none ml-auto">Put song length here</span>
-          </template>
-
-          <template v-else>
-            <span :class="['truncate font-semibold text-lg select-none', nowPlaying?.path === song.path ? 'text-[#ea580c]' : 'text-white']">
-              {{ song.name.replace(/\.mp3$/, '').trim() }}
+          <div class="flex flex-col overflow-hidden">
+            <span
+              :class="[
+                'truncate font-semibold text-lg select-none',
+                currentstate.CurrentSong?.path === song.path ? 'text-[#ea580c]' : 'text-white',
+              ]">
+              {{ song.name || 'Unknown' }}
             </span>
-            <span class="truncate text-sm text-gray-400 select-none"> Unnamed Artist </span>
-          </template>
+            <span class="truncate text-sm text-gray-400 select-none">
+              {{ song.artist || 'Unknown Artist' }}
+            </span>
+          </div>
+
+          <span class="text-sm text-gray-400 select-none ml-auto">Put song length here</span>
         </div>
       </section>
 
@@ -111,33 +86,49 @@
 </template>
 
 <script setup>
-import { onMounted, inject, ref } from 'vue';
-import VueSlider from 'vue-3-slider-component';
-import { playIcon, pauseIcon, refresh, audioOff, audioOn } from '../composables/Icons.js';
+import { inject, watch, computed } from 'vue';
+// import VueSlider from 'vue-3-slider-component';
+import { playIcon, pauseIcon } from '../composables/Icons.js';
 
-const mainFolder = ref('');
-const subFolders = ref([]);
-
-onMounted(() => {
-  const musicState = inject('musicState');
-  if (!musicState) {
-    throw new Error('MusicState not provided!');
-  } else {
-    mainFolder.value = musicState.MainFolder.path;
-    subFolders.value = musicState.SubFolders;
-    console.log(musicState.MainFolder.path);
-    console.log(mainFolder.value);
-  }
+const musicState = inject('musicState');
+const mainFolder = musicState.MainFolder.value;
+const subFolders = musicState.SubFolders.value;
+const allFolders = computed(() => {
+  const list = [...(subFolders || [])];
+  list.unshift(mainFolder);
+  return list;
 });
+if (!musicState) throw new Error('MusicState not provided!');
 
-async function selectSong(index) {
-  const song = songs.value[index];
+watch(
+  () => mainFolder?.path,
+  async (newPath) => {
+    if (newPath) {
+      await musicState.GetPlayback(newPath);
+    }
+  },
+  { immediate: true }
+);
+
+const currentstate = computed(() => musicState.CurrentState.value);
+
+async function selectSong(path) {
+  if (!musicState.CurrentState.value.CurrentSong.path) {
+    await musicState.GetPlayback(path);
+    musicState.CurrentState.value.IsPlaying = true;
+  } else if (musicState.CurrentState.value.CurrentSong.path != path) {
+    musicState.CurrentState.value.IsPlaying = true;
+    await musicState.GetPlayback(path);
+  } else {
+    musicState.CurrentState.value.IsPlaying = !musicState.CurrentState.value.IsPlaying;
+  }
 }
 
-async function selectFolder(path) {
-  folder.value = path;
-}
-
+//
+// async function selectFolder(path) {
+//   await musicState.GetPlayback(path);
+// }
+//
 const refreshApp = async () => {
   await window.electronAPI.refreshApp();
 };

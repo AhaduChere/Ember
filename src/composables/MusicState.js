@@ -2,8 +2,10 @@ import { ref } from 'vue';
 
 export class MusicState {
   constructor() {
-    this.MainFolder = {};
-    this.SubFolders = [];
+    this.MainFolder = ref({
+      path: '',
+    });
+    this.SubFolders = ref([]);
     this.IsPlaying = ref(false);
     this.CurrentState = ref({
       CurrentSong: { path: '', name: '', artist: '' },
@@ -12,15 +14,15 @@ export class MusicState {
   }
 
   async SetupMainFolder() {
-    this.MainFolder.path = await window.electronAPI.checkMusicFolder();
-    this.MainFolder.songs = await window.electronAPI.LoadSongs(this.MainFolder.path);
+    this.MainFolder.value.path = await window.electronAPI.checkMusicFolder();
+    this.MainFolder.value.songs = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
   }
 
   async SetupSubFolders() {
-    const array = await window.electronAPI.getFolders(this.MainFolder.path);
+    const array = await window.electronAPI.getFolders(this.MainFolder.value.path);
     for (let i = 0; i < array.length; i++) {
       const songs = await window.electronAPI.LoadSongs(array[i]);
-      this.SubFolders.push({ path: array[i], songs: songs });
+      this.SubFolders.value.push({ path: array[i], songs: songs });
     }
   }
 
