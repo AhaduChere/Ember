@@ -1,7 +1,5 @@
 <template>
-  <div>
-    
-  </div>
+  <div></div>
   <!-- <audio ref="audioRef" :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio> -->
   <!-- <div class="w-screen h-24 bg-neutral-950 fixed bottom-0 border-t border-stone-800"> -->
   <!--   <div v-show="nowPlaying" class="text-white fixed left-2 bottom-4 flex items-center space-x-2"> -->
@@ -56,21 +54,7 @@
 import VueSlider from 'vue-3-slider-component';
 import Icon from '../assets/Icon.png';
 import { ref, onMounted, inject } from 'vue';
-import {
-  skipNextIcon,
-  skipPreviousIcon,
-  playIcon,
-  pauseIcon,
-  notLoopIcon,
-  loopIcon,
-  loopSingleIcon,
-  shuffleOffIcon,
-  shuffleOnIcon,
-} from '../composables/Icons.js';
 
-const currentPlayIcon = ref(playIcon);
-const currentShuffleIcon = ref(shuffleOffIcon);
-const currentLoopIcon = ref(notLoopIcon);
 const playbackState = ref(0);
 const sliderValue = ref(0);
 

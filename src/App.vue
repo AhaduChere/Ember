@@ -14,5 +14,6 @@ provide('musicState', musicState);
 onMounted(async () => {
   await musicState.SetupMainFolder();
   await musicState.SetupSubFolders();
+  await musicState.InitializeCurrentState();
 });
 </script>

@@ -7,7 +7,7 @@
         <button
           class="bg-[#1f1f1f] cursor-pointer hover:bg-[#2a2a2a] gap-3 flex p-4 rounded-xl font-semibold transition-colors shadow-md select-none justify-center"
           @click="refreshApp">
-          <!-- <img draggable="false" :src="refresh" class="w-8 h-auto select-none" /> -->
+          <img draggable="false" :src="Icons.refresh" class="w-8 h-auto select-none" />
           <p class="pt-0.5">Refresh</p>
         </button>
 
@@ -20,7 +20,8 @@
               musicState.CurrentState.value.CurrentPlaylist?.path === folder.path
                 ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]'
                 : '',
-            ]">
+            ]"
+            @click.stop="selectFolder(folder.path)">
             <div class="h-24 bg-[#1f1f1f] flex items-center justify-center">
               <span class="text-9xl text-[#ea580c] font-bold select-none">♪</span>
             </div>
@@ -44,17 +45,17 @@
             musicState.CurrentState.value.CurrentSong?.path === song.path
               ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]'
               : '',
-          ]">
+          ]"
+          @dblclick.stop="selectSong(song.path)">
           <img
             draggable="false"
             :src="
               musicState.CurrentState.value.CurrentSong?.path === song.path && musicState.CurrentState.value.IsPlaying
-                ? pauseIcon
-                : playIcon
+                ? Icons.pauseIcon
+                : Icons.playIcon
             "
             class="w-12 h-12 cursor-pointer select-none"
             @click.stop="selectSong(song.path)" />
-
           <div class="flex flex-col overflow-hidden">
             <span
               :class="[
@@ -94,48 +95,35 @@
 </template>
 
 <script setup>
-import { inject, watch, computed } from 'vue';
+import { inject, computed } from 'vue';
+import Icons from '../composables/Icons.js';
 // import VueSlider from 'vue-3-slider-component';
-import { playIcon, pauseIcon } from '../composables/Icons.js';
 
 const musicState = inject('musicState');
-const mainFolder = musicState.MainFolder.value;
-const subFolders = musicState.SubFolders.value;
-const allFolders = computed(() => {
-  const list = [...(subFolders || [])];
-  list.unshift(mainFolder);
-  return list;
-});
 if (!musicState) throw new Error('MusicState not provided!');
 
-watch(
-  () => mainFolder?.path,
-  async (newPath) => {
-    if (newPath) {
-      await musicState.GetPlayback(newPath);
-      console.log(musicState.CurrentState.value.CurrentPlaylist);
-    }
-  },
-  { immediate: true }
-);
+const allFolders = computed(() => {
+  const list = [...(musicState.SubFolders.value || [])];
+  list.unshift(musicState.MainFolder.value);
+  return list;
+});
 
 async function selectSong(path) {
   if (!musicState.CurrentState.value.CurrentSong.path) {
-    await musicState.GetPlayback(path);
+    await musicState.updateCurrentState(path);
     musicState.CurrentState.value.IsPlaying = true;
   } else if (musicState.CurrentState.value.CurrentSong.path != path) {
     musicState.CurrentState.value.IsPlaying = true;
-    await musicState.GetPlayback(path);
+    await musicState.updateCurrentState(path);
   } else {
     musicState.CurrentState.value.IsPlaying = !musicState.CurrentState.value.IsPlaying;
   }
 }
 
-//
-// async function selectFolder(path) {
-//   await musicState.GetPlayback(path);
-// }
-//
+async function selectFolder(path) {
+  await musicState.updateCurrentState(path);
+}
+
 const refreshApp = async () => {
   await window.electronAPI.refreshApp();
 };

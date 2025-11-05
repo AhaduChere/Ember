@@ -1,3 +1,4 @@
+// Icons.js
 import playIcon from '../assets/Play_Button.svg?url';
 import pauseIcon from '../assets/Pause_Button.svg?url';
 import skipNextIcon from '../assets/Skip_Next.svg?url';
@@ -11,7 +12,7 @@ import audioOn from '../assets/Audio-On.svg';
 import audioOff from '../assets/Audio-Off.svg';
 import refresh from '../assets/Refresh.svg';
 
-const icons = [
+const Icons = {
   playIcon,
   pauseIcon,
   skipNextIcon,
@@ -23,25 +24,7 @@ const icons = [
   shuffleOnIcon,
   audioOn,
   audioOff,
-  refresh,
-];
-
-icons.forEach((src) => {
-  const img = new Image();
-  img.src = src;
-});
-
-export {
-  playIcon,
-  pauseIcon,
-  skipNextIcon,
-  skipPreviousIcon,
-  notLoopIcon,
-  loopIcon,
-  loopSingleIcon,
-  shuffleOffIcon,
-  shuffleOnIcon,
-  audioOff,
-  audioOn,
   refresh,
 };
+
+export default Icons;
