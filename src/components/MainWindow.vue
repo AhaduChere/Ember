@@ -17,7 +17,9 @@
             :key="folder.path"
             class="group bg-[#1f1f1f] rounded-xl cursor-pointer overflow-hidden transition-all shadow-md"
             :class="[
-              currentstate.CurrentPlaylist?.path === folder.path ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : '',
+              musicState.CurrentState.value.CurrentPlaylist?.path === folder.path
+                ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]'
+                : '',
             ]">
             <div class="h-24 bg-[#1f1f1f] flex items-center justify-center">
               <span class="text-9xl text-[#ea580c] font-bold select-none">♪</span>
@@ -35,15 +37,21 @@
         class="col-span-2 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
         :style="{ height: 'calc(100vh - 7rem)' }">
         <div
-          v-for="song in currentstate.CurrentPlaylist || []"
+          v-for="song in musicState.CurrentState.value.CurrentPlaylist || []"
           :key="song.path"
           :class="[
             'bg-[#1f1f1f] hover:bg-[#2a2a2a] p-4 rounded-xl flex items-center gap-4 cursor-pointer',
-            currentstate.CurrentSong?.path === song.path ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]' : '',
+            musicState.CurrentState.value.CurrentSong?.path === song.path
+              ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]'
+              : '',
           ]">
           <img
             draggable="false"
-            :src="currentstate.CurrentSong?.path === song.path && musicState.CurrentState.value.IsPlaying ? pauseIcon : playIcon"
+            :src="
+              musicState.CurrentState.value.CurrentSong?.path === song.path && musicState.CurrentState.value.IsPlaying
+                ? pauseIcon
+                : playIcon
+            "
             class="w-12 h-12 cursor-pointer select-none"
             @click.stop="selectSong(song.path)" />
 
@@ -51,7 +59,7 @@
             <span
               :class="[
                 'truncate font-semibold text-lg select-none',
-                currentstate.CurrentSong?.path === song.path ? 'text-[#ea580c]' : 'text-white',
+                musicState.CurrentState.value.CurrentSong?.path === song.path ? 'text-[#ea580c]' : 'text-white',
               ]">
               {{ song.name || 'Unknown' }}
             </span>
@@ -105,12 +113,11 @@ watch(
   async (newPath) => {
     if (newPath) {
       await musicState.GetPlayback(newPath);
+      console.log(musicState.CurrentState.value.CurrentPlaylist);
     }
   },
   { immediate: true }
 );
-
-const currentstate = computed(() => musicState.CurrentState.value);
 
 async function selectSong(path) {
   if (!musicState.CurrentState.value.CurrentSong.path) {
