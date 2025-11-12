@@ -9,6 +9,7 @@ export class MusicState {
     this.SubFolders = ref([]);
     this.IsPlaying = ref(false);
     this.CurrentState = ref({
+      State: false,
       CurrentSong: { path: '', name: '', artist: '' },
       CurrentPlaylist: { path: '', songs: [] },
     });
@@ -26,7 +27,7 @@ export class MusicState {
       this.SubFolders.value.push({ path: array[i], songs: songs });
     }
   }
-  // Update CurrentState method
+  // Setup CurrentState method
   async initializeCurrentState() {
     this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
     this.CurrentState.value.CurrentPlaylist.path = this.MainFolder.value.path;
@@ -51,16 +52,25 @@ export class MusicState {
         this.CurrentState.value.CurrentSong.duration =
           this.CurrentState.value.CurrentPlaylist.find((song) => song.path === this.CurrentState.value.CurrentSong.path)?.duration ||
           'Unknown';
+
+        this.CurrentState.value.State = true;
       } catch (error) {
         alert('Could not Start Playback' + error);
       }
     } else {
       this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(path);
       this.CurrentState.value.CurrentPlaylist.path = path;
+      this.CurrentState.value.State = true;
     }
   }
 
   async togglePlayback() {
     this.CurrentState.value.IsPlaying = !this.CurrentState.value.IsPlaying;
+  }
+
+  async GetMP3() {
+    const filepath = this.CurrentState.value.CurrentSong.path;
+    const buffer = await window.electronAPI.getMp3Buffer(filepath);
+    return buffer;
   }
 }

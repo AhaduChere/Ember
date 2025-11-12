@@ -11,8 +11,10 @@ import shuffleOnIcon from '../assets/Shuffling.svg?url';
 import audioOn from '../assets/Audio-On.svg';
 import audioOff from '../assets/Audio-Off.svg';
 import refresh from '../assets/Refresh.svg';
+import logo from '../assets/Icon.png'; 
 
 const Icons = {
+  logo,
   playIcon,
   pauseIcon,
   skipNextIcon,
