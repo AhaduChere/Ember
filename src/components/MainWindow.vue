@@ -50,9 +50,7 @@
           <img
             draggable="false"
             :src="
-              musicState.CurrentState.value.CurrentSong?.path === song.path && musicState.CurrentState.value.IsPlaying
-                ? Icons.pauseIcon
-                : Icons.playIcon
+              musicState.CurrentState.value.CurrentSong?.path === song.path && musicState.IsPlaying.value ? Icons.pauseIcon : Icons.playIcon
             "
             class="w-12 h-12 cursor-pointer select-none"
             @click.stop="selectSong(song.path)" />
@@ -99,7 +97,7 @@
 <script setup>
 import { inject, computed } from 'vue';
 import Icons from '../composables/Icons.js';
-import VueSlider from 'vue-3-slider-component';
+// import VueSlider from 'vue-3-slider-component';
 
 const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');
@@ -111,12 +109,11 @@ const allFolders = computed(() => {
 });
 
 async function selectSong(path) {
-  if (!musicState.CurrentState.value.CurrentSong.path) {
+  if (musicState.CurrentState.value.CurrentSong.path !== path) {
     await musicState.updateCurrentState(path);
-    musicState.CurrentState.value.IsPlaying = true;
-  } else if (musicState.CurrentState.value.CurrentSong.path != path) {
-    musicState.CurrentState.value.IsPlaying = true;
-    await musicState.updateCurrentState(path);
+    await musicState.getMP3();
+    musicState.IsPlaying.value = true;
+    musicState.audioRef.value.play();
   } else {
     musicState.togglePlayback();
   }

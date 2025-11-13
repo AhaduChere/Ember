@@ -31,8 +31,8 @@ export function LoadSongs(filepath) {
       const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
       return {
-        name: path.parse(file).name.split('-')[0]?.trim(),
-        artist: path.parse(file).name.split('-')[1]?.trim() ?? 'Unknown',
+        name: path.parse(file).name.split('|')[0]?.trim(),
+        artist: path.parse(file).name.split('|')[1]?.trim() ?? 'Unknown',
         path: filePath,
         duration: formattedDuration,
         rawseconds: durationSec,

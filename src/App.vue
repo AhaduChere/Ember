@@ -15,5 +15,11 @@ onMounted(async () => {
   await musicState.setupMainFolder();
   await musicState.setupSubFolders();
   await musicState.initializeCurrentState();
+  // watch(
+  //   () => musicState.CurrentState.value.CurrentSong.path,
+  //   async () => {
+  //     await musicState.GetMP3();
+  //   }
+  // );
 });
 </script>

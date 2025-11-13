@@ -1,5 +1,12 @@
 <template>
-  <audio :src="audioSrc" @ended="onEnded" @timeupdate="onTimeUpdate" @loadedmetadata="onLoadedMetadata"></audio>
+  <audio
+    :ref="musicState.audioRef"
+    :src="musicState.audioSrc.value"
+    controls
+    class="absolute top-0 right-0 z-50"
+    @ended="onEnded"
+    @timeupdate="onTimeUpdate"
+    @loadedmetadata="onLoadedMetadata"></audio>
   <div class="w-screen h-24 bg-neutral-950 fixed bottom-0 border-t border-stone-800">
     <div v-show="musicState.CurrentState.value.State" class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
       <img :src="Icons.logo" class="w-16 h-auto rounded select-none" />
@@ -19,7 +26,7 @@
     </div>
     <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
       <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2 select-none">
-        {{ sliderValue || sliderValue == null ? '0:00' : sliderValue }}
+        {{ !musicState.CurrentState.value.State ? '0:00' : formatTime(sliderValue) }}
       </span>
       <VueSlider
         v-model="sliderValue"
@@ -44,21 +51,28 @@
       >
     </div>
     <div class="flex justify-center items-stretch mb-2">
-      <img draggable="false" :src="currentLoopIcon" class="w-8 h-12 cursor-pointer select-none mr-2" @click="toggleLoop" />
+      <img
+        draggable="false"
+        :src="musicState.loopMode.value === 0 ? Icons.notLoopIcon : musicState.loopMode.value === 1 ? Icons.loopIcon : Icons.loopSingleIcon"
+        class="w-8 h-12 cursor-pointer select-none mr-2"
+        @click.stop="musicState.toggleLoop()" />
+
       <img draggable="false" :src="Icons.skipPreviousIcon" class="w-12 h-12 cursor-pointer select-none mr-2" @click="playPrevious" />
 
       <button
         :disabled="!musicState.CurrentState.value.CurrentSong.name"
         class="w-12 h-12 flex items-center justify-center cursor-pointer"
-        @click.stop="Playback">
-        <img
-          draggable="false"
-          :src="musicState.CurrentState.value.IsPlaying ? Icons.pauseIcon : Icons.playIcon"
-          class="w-12 h-12 select-none" />
+        @click.stop="musicState.togglePlayback()">
+        <img draggable="false" :src="musicState.IsPlaying.value ? Icons.pauseIcon : Icons.playIcon" class="w-12 h-12 select-none" />
       </button>
 
-      <img draggable="false" :src="Icons.skipNextIcon" class="w-12 h-12 cursor-pointer select-none ml-2" @click="playNext" />
-      <img draggable="false" :src="currentShuffleIcon" class="w-8 h-12 cursor-pointer select-none ml-2" @click="toggleShuffle" />
+      <img draggable="false" :src="Icons.skipNextIcon" class="w-12 h-12 cursor-pointer select-none ml-2" @click="playNext()" />
+
+      <img
+        draggable="false"
+        :src="musicState.shuffleMode.value ? Icons.shuffleOnIcon : Icons.shuffleOffIcon"
+        class="w-8 h-12 cursor-pointer select-none ml-2"
+        @click.stop="musicState.toggleShuffle()" />
     </div>
   </div>
 </template>
@@ -68,40 +82,72 @@ import VueSlider from 'vue-3-slider-component';
 import Icons from '../composables/Icons.js';
 import { ref, inject } from 'vue';
 
-const musicState = inject('musicState');
-const currentShuffleIcon = ref(Icons.shuffleOffIcon);
-const currentLoopIcon = ref(Icons.notLoopIcon);
 const dragging = ref(false);
 const hovering = ref(false);
 const sliderValue = ref(0);
-const audioSrc = ref('');
 
+const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');
 
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space' && musicState.CurrentState.value.State) {
-    Playback();
+    musicState.togglePlayback();
   }
 });
 
-function Playback() {
-  musicState.togglePlayback();
+function onSliderChange(val) {
+  if (musicState.audioRef?.value) musicState.audioRef.value.currentTime = val;
 }
 
-const toggleLoop = () => {
-  if (currentLoopIcon.value === Icons.notLoopIcon) {
-    currentLoopIcon.value = Icons.loopIcon;
-  } else if (currentLoopIcon.value === Icons.loopIcon) {
-    currentLoopIcon.value = Icons.loopSingleIcon;
+async function onEnded() {
+  if (musicState.loopMode.value == 0) {
+    musicState.audioRef.value.currentTime = 0;
+    musicState.IsPlaying.value = false;
+  } else if (musicState.loopMode.value == 1) {
+    let nextSong = await musicState.getNextSong();
+    await musicState.updateCurrentState(nextSong);
+    await musicState.getMP3();
+    musicState.audioRef.value.play();
   } else {
-    currentLoopIcon.value = Icons.notLoopIcon;
+    musicState.audioRef.value.currentTime = 0;
+    musicState.audioRef.value.play();
   }
-};
-const toggleShuffle = () => {
-  currentShuffleIcon.value = currentShuffleIcon.value === Icons.shuffleOffIcon ? Icons.shuffleOnIcon : Icons.shuffleOffIcon;
-};
+}
 
-function onSliderChange(val) {
-  if (audioRef?.value) audioRef.value.currentTime = val;
+async function playNext() {
+  let nextSong = await musicState.getNextSong();
+  await musicState.updateCurrentState(nextSong);
+  await musicState.getMP3();
+  musicState.audioRef.value.currentTime = 0;
+  if (musicState.loopMode.value == 1 || musicState.loopMode.value == 2) {
+    musicState.audioRef.value.play();
+    musicState.IsPlaying.value = true;
+  } else {
+    musicState.audioRef.value.pause();
+    musicState.IsPlaying.value = false;
+  }
+}
+
+async function playPrevious() {
+  if (musicState.audioRef.value.currentTime > 5 || musicState.loopMode.value == 0 || musicState.loopMode.value == 2) {
+    musicState.audioRef.value.currentTime = 0;
+  } else {
+    let prevSong = await musicState.getPreviousSong();
+    await musicState.updateCurrentState(prevSong);
+    await musicState.getMP3();
+    musicState.audioRef.value.play();
+  }
+}
+
+function onTimeUpdate() {
+  sliderValue.value = Math.floor(musicState.audioRef.value.currentTime || 0);
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2, '0');
+  return `${m}:${s}`;
 }
 </script>
