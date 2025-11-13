@@ -1,4 +1,4 @@
-import { app, dialog } from 'electron';
+import { app } from 'electron';
 import { parseFile } from 'music-metadata';
 import path from 'node:path';
 import fs from 'fs';
@@ -8,16 +8,11 @@ export function checkMusicFolder() {
   return fs.existsSync(musicPath) ? musicPath : null;
 }
 
-export async function openFolderDialog() {
-  const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
-  return result.filePaths[0] || null;
-}
-
 export function getMp3Buffer(filePath) {
   return fs.readFileSync(filePath);
 }
 
-export function LoadSongs(filepath) {
+export function loadSongs(filepath) {
   const folder = filepath.endsWith('.mp3') ? path.dirname(filepath) : filepath;
   const files = fs.readdirSync(folder);
   const mp3s = files.filter((file) => file.endsWith('.mp3'));

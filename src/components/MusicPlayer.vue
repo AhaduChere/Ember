@@ -2,7 +2,6 @@
   <audio
     :ref="musicState.audioRef"
     :src="musicState.audioSrc.value"
-    controls
     class="absolute top-0 right-0 z-50"
     @ended="onEnded"
     @timeupdate="onTimeUpdate"
@@ -51,28 +50,65 @@
       >
     </div>
     <div class="flex justify-center items-stretch mb-2">
-      <img
-        draggable="false"
-        :src="musicState.loopMode.value === 0 ? Icons.notLoopIcon : musicState.loopMode.value === 1 ? Icons.loopIcon : Icons.loopSingleIcon"
-        class="w-8 h-12 cursor-pointer select-none mr-2"
-        @click.stop="musicState.toggleLoop()" />
-
-      <img draggable="false" :src="Icons.skipPreviousIcon" class="w-12 h-12 cursor-pointer select-none mr-2" @click="playPrevious" />
+      <button
+        :disabled="!musicState.CurrentState.value.CurrentSong.name"
+        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+        class="w-8 h-12 mr-2 flex items-center justify-center"
+        @click.stop="musicState.toggleLoop()">
+        <img
+          draggable="false"
+          :src="
+            musicState.loopMode.value === 0 ? Icons.notLoopIcon : musicState.loopMode.value === 1 ? Icons.loopIcon : Icons.loopSingleIcon
+          "
+          class="w-8 h-12 select-none" />
+      </button>
 
       <button
         :disabled="!musicState.CurrentState.value.CurrentSong.name"
-        class="w-12 h-12 flex items-center justify-center cursor-pointer"
+        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+        class="w-12 h-12 mr-2 flex items-center justify-center"
+        @click="playPrevious">
+        <img draggable="false" :src="Icons.skipPreviousIcon" class="w-12 h-12 select-none" />
+      </button>
+
+      <button
+        :disabled="!musicState.CurrentState.value.CurrentSong.name"
+        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+        class="w-12 h-12 flex items-center justify-center"
         @click.stop="musicState.togglePlayback()">
         <img draggable="false" :src="musicState.IsPlaying.value ? Icons.pauseIcon : Icons.playIcon" class="w-12 h-12 select-none" />
       </button>
 
-      <img draggable="false" :src="Icons.skipNextIcon" class="w-12 h-12 cursor-pointer select-none ml-2" @click="playNext()" />
+      <button
+        :disabled="!musicState.CurrentState.value.CurrentSong.name"
+        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+        class="w-12 h-12 ml-2 flex items-center justify-center"
+        @click="playNext()">
+        <img draggable="false" :src="Icons.skipNextIcon" class="w-12 h-12 select-none" />
+      </button>
 
-      <img
-        draggable="false"
-        :src="musicState.shuffleMode.value ? Icons.shuffleOnIcon : Icons.shuffleOffIcon"
-        class="w-8 h-12 cursor-pointer select-none ml-2"
-        @click.stop="musicState.toggleShuffle()" />
+      <button
+        :disabled="!musicState.CurrentState.value.CurrentSong.name"
+        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+        class="w-8 h-12 ml-2 flex items-center justify-center"
+        @click.stop="musicState.toggleShuffle()">
+        <img
+          draggable="false"
+          :src="musicState.shuffleMode.value ? Icons.shuffleOnIcon : Icons.shuffleOffIcon"
+          class="w-8 h-12 select-none" />
+      </button>
+    </div>
+    <div class="absolute bottom-0 right-0 -mt-14 w-20">
+      <img draggable="false" :src="volume === 0 ? Icons.audioOff : Icons.audioOn" class="w-8 h-auto select-none" />
+      <VueSlider
+        v-model="volume"
+        :min="0"
+        :max="100"
+        :height="4"
+        :dot-size="10"
+        :process-style="{ backgroundColor: '#ea580c' }"
+        :rail-style="{ backgroundColor: '#4B5563' }"
+        :tooltip="'none'" />
     </div>
   </div>
 </template>
@@ -85,6 +121,7 @@ import { ref, inject } from 'vue';
 const dragging = ref(false);
 const hovering = ref(false);
 const sliderValue = ref(0);
+const volume = ref(0);
 
 const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');

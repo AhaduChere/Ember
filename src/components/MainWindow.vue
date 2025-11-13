@@ -35,7 +35,7 @@
       </section>
 
       <section
-        class="col-span-2 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
+        class="col-span-3 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
         :style="{ height: 'calc(100vh - 7rem)' }">
         <div
           v-for="song in musicState.CurrentState.value.CurrentPlaylist || []"
@@ -72,24 +72,6 @@
           </span>
         </div>
       </section>
-
-      <!-- <section -->
-      <!--   class="col-span-1 border-l border-stone-800 overflow-y-auto p-6 flex flex-col gap-6" -->
-      <!--   :style="{ height: 'calc(100vh - 8rem)' }"> -->
-      <!--   <div class="flex items-center gap-4 mt-4"> -->
-      <!--     <img draggable="false" :src="volume === 0 ? audioOff : audioOn" class="w-8 h-auto select-none" /> -->
-      <!--     <VueSlider -->
-      <!--       v-model="volume" -->
-      <!--       :min="0" -->
-      <!--       :max="100" -->
-      <!--       :height="6" -->
-      <!--       :dot-size="10" -->
-      <!--       :process-style="{ backgroundColor: '#ea580c' }" -->
-      <!--       :rail-style="{ backgroundColor: '#4B5563' }" -->
-      <!--       :tooltip="'none'" -->
-      <!--       class="flex-1" /> -->
-      <!--   </div> -->
-      <!-- </section> -->
     </main>
   </div>
 </template>
@@ -97,7 +79,6 @@
 <script setup>
 import { inject, computed } from 'vue';
 import Icons from '../composables/Icons.js';
-// import VueSlider from 'vue-3-slider-component';
 
 const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');

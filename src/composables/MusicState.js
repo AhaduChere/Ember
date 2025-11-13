@@ -22,24 +22,24 @@ export class MusicState {
   // Finds systems Music folder
   async setupMainFolder() {
     this.MainFolder.value.path = await window.electronAPI.checkMusicFolder();
-    this.MainFolder.value.songs = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
+    this.MainFolder.value.songs = await window.electronAPI.loadSongs(this.MainFolder.value.path);
   }
   // Finds Subfolders within Music folder for playlists
   async setupSubFolders() {
     const array = await window.electronAPI.getFolders(this.MainFolder.value.path);
     for (let i = 0; i < array.length; i++) {
-      const songs = await window.electronAPI.LoadSongs(array[i]);
+      const songs = await window.electronAPI.loadSongs(array[i]);
       this.SubFolders.value.push({ path: array[i], songs: songs });
     }
   }
 
   async initializeCurrentState() {
-    this.CurrentState.value.CurrentPlaylist = await window.electronAPI.LoadSongs(this.MainFolder.value.path);
+    this.CurrentState.value.CurrentPlaylist = await window.electronAPI.loadSongs(this.MainFolder.value.path);
     this.CurrentState.value.CurrentPlaylist.path = this.MainFolder.value.path;
   }
 
   async updateCurrentState(path) {
-    const songs = await window.electronAPI.LoadSongs(path);
+    const songs = await window.electronAPI.loadSongs(path);
     const isFile = path.endsWith('.mp3');
 
     if (isFile) {
