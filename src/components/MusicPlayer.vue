@@ -97,15 +97,15 @@
           :src="musicState.shuffleMode.value ? Icons.shuffleOnIcon : Icons.shuffleOffIcon"
           class="w-8 h-12 select-none" />
       </button>
-    </div>
-    <div class="absolute bottom-0 right-0 -mt-14 w-20">
       <img draggable="false" :src="volume === 0 ? Icons.audioOff : Icons.audioOn" class="w-8 h-auto select-none" />
       <VueSlider
         v-model="volume"
+        class="mt-4 ml-2"
         :min="0"
         :max="100"
         :height="4"
         :dot-size="10"
+        :style="{ width: '20%' }"
         :process-style="{ backgroundColor: '#ea580c' }"
         :rail-style="{ backgroundColor: '#4B5563' }"
         :tooltip="'none'" />
@@ -121,7 +121,7 @@ import { ref, inject } from 'vue';
 const dragging = ref(false);
 const hovering = ref(false);
 const sliderValue = ref(0);
-const volume = ref(0);
+const volume = ref(20);
 
 const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');

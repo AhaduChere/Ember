@@ -66,7 +66,6 @@
               {{ song.artist || 'Unknown Artist' }}
             </span>
           </div>
-
           <span class="text-sm text-gray-400 select-none ml-auto">
             {{ song.duration || 'Unknown Artist' }}
           </span>
