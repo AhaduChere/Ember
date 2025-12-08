@@ -13,7 +13,7 @@ export class MusicState {
     this.CurrentState = ref({
       State: false,
       CurrentSong: { path: '', name: '', artist: '' },
-      CurrentPlaylist: { path: '', songs: [] },
+      CurrentPlaylist: { path: '', songs: [], cover: '' },
     });
     this.audioSrc = ref('');
     this.sliderValue = ref();
@@ -54,8 +54,19 @@ export class MusicState {
       });
       this.CurrentState.value.State = true;
     } else {
+      if (this.CurrentState.value.CurrentPlaylist.cover) {
+        URL.revokeObjectURL(this.CurrentState.value.CurrentPlaylist.cover);
+      }
       this.CurrentState.value.CurrentPlaylist = songs;
       this.CurrentState.value.CurrentPlaylist.path = path;
+      if (path !== this.MainFolder.value.path) {
+        const coverPath = await window.electronAPI.getFolderCover(path);
+        if (coverPath) {
+          const buffer = await window.electronAPI.getFileBuffer(coverPath);
+          const blob = new Blob([buffer], { type: 'image/jpeg' });
+          this.CurrentState.value.CurrentPlaylist.cover = URL.createObjectURL(blob);
+        }
+      }
     }
   }
 
@@ -88,7 +99,7 @@ export class MusicState {
 
   async getMP3() {
     const filepath = this.CurrentState.value.CurrentSong.path;
-    const buffer = await window.electronAPI.getMp3Buffer(filepath);
+    const buffer = await window.electronAPI.getFileBuffer(filepath);
     const blob = new Blob([buffer], { type: 'audio/mpeg' });
     if (this.audioSrc.value) {
       URL.revokeObjectURL(this.audioSrc.value);

@@ -40,7 +40,11 @@
         <div class="bg-[#1f1f1f] w-full rounded-xl p-8 flex items-end justify-between">
           <div class="flex items-center gap-6">
             <div class="w-36 h-36 bg-[#181818] rounded-md flex items-center justify-center shadow-xl overflow-hidden">
-              <span class="text-7xl text-[#ea580c] font-bold select-none">♪</span>
+              <img
+                v-if="musicState.CurrentState.value.CurrentPlaylist.cover"
+                :src="musicState.CurrentState.value.CurrentPlaylist.cover"
+                class="w-full h-full object-cover" />
+              <span v-else class="text-7xl text-[#ea580c] font-bold select-none">♪</span>
             </div>
 
             <div class="flex flex-col justify-start">
@@ -122,6 +126,12 @@ async function selectFolder(path) {
 const refreshApp = async () => {
   await window.electronAPI.refreshApp();
 };
+
+const cover = computed(() => {
+  const path = musicState.CurrentState.value.CurrentPlaylist.path;
+  const folder = musicState.SubFolders.value.find((f) => f.path === path);
+  return folder?.cover || null;
+});
 </script>
 
 <style scoped>

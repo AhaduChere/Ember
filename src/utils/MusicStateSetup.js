@@ -8,7 +8,7 @@ export function checkMusicFolder() {
   return fs.existsSync(musicPath) ? musicPath : null;
 }
 
-export function getMp3Buffer(filePath) {
+export function getFileBuffer(filePath) {
   return fs.readFileSync(filePath);
 }
 

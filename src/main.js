@@ -1,7 +1,7 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, protocol } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { checkMusicFolder, loadSongs, getMp3Buffer, getFolders, getFolderCover } from './utils/MusicStateSetup.js';
+import { checkMusicFolder, loadSongs, getFileBuffer, getFolders, getFolderCover } from './utils/MusicStateSetup.js';
 
 if (started) app.quit();
 let mainWindow;
@@ -46,7 +46,7 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('check-folder', () => checkMusicFolder());
 ipcMain.handle('load-songs', (_, folder) => loadSongs(folder));
-ipcMain.handle('get-mp3-buffer', (_, filePath) => getMp3Buffer(filePath));
+ipcMain.handle('get-file-buffer', (_, filePath) => getFileBuffer(filePath));
 ipcMain.handle('get-folders', (_, folder) => getFolders(folder));
 ipcMain.handle('refresh-app', () => {
   if (mainWindow) {
@@ -56,3 +56,10 @@ ipcMain.handle('refresh-app', () => {
   return false;
 });
 ipcMain.handle('getFolderCover', (_, folderPath) => getFolderCover(folderPath));
+
+app.whenReady().then(() => {
+  protocol.registerFileProtocol('cover', (request, callback) => {
+    const filePath = request.url.replace('cover://', '');
+    callback({ path: filePath });
+  });
+});
