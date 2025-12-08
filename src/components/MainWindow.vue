@@ -1,9 +1,7 @@
 <template>
   <div class="bg-[#121212] text-white min-h-screen">
-    <main class="grid grid-cols-4 h-full overflow-clip">
-      <section
-        class="col-span-1 border-r border-stone-800 overflow-y-auto p-4 flex flex-col gap-3"
-        :style="{ height: 'calc(100vh - 6rem)' }">
+    <main class="h-full overflow-clip flex">
+      <section class="flex-1 border-r border-stone-800 overflow-y-auto p-4 flex flex-col gap-3" :style="{ height: 'calc(100vh - 6rem)' }">
         <button
           class="bg-[#1f1f1f] cursor-pointer hover:bg-[#2a2a2a] gap-3 flex p-4 rounded-xl font-semibold transition-colors shadow-md select-none justify-center"
           @click="refreshApp">
@@ -11,7 +9,7 @@
           <p class="pt-0.5">Refresh</p>
         </button>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
+        <div class="flex flex-col gap-6">
           <div
             v-for="folder in allFolders"
             :key="folder.path"
@@ -35,24 +33,26 @@
       </section>
 
       <section
-        class="col-span-3 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
+        class="flex-3 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
         :style="{ height: 'calc(100vh - 7rem)' }">
-        <div class="bg-[#1f1f1f] w-full rounded-xl p-8 flex items-end justify-between">
-          <div class="flex items-center gap-6">
-            <div class="w-36 h-36 bg-[#181818] rounded-md flex items-center justify-center shadow-xl overflow-hidden">
-              <img
-                v-if="musicState.CurrentState.value.CurrentPlaylist.cover"
-                :src="musicState.CurrentState.value.CurrentPlaylist.cover"
-                class="w-full h-full object-cover" />
-              <span v-else class="text-7xl text-[#ea580c] font-bold select-none">♪</span>
-            </div>
+        <div class="bg-[#1f1f1f] w-full rounded-xl p-6 flex items-center gap-6">
+          <div class="w-36 h-36 bg-[#181818] rounded-md flex items-center justify-center shadow-lg overflow-hidden">
+            <img
+              v-if="musicState.CurrentState.value.CurrentPlaylist.cover"
+              :src="musicState.CurrentState.value.CurrentPlaylist.cover"
+              class="w-full h-full object-cover" />
+            <span v-else class="text-6xl text-[#ea580c] font-bold select-none">♪</span>
+          </div>
 
-            <div class="flex flex-col justify-start">
-              <span class="uppercase text-sm font-semibold tracking-widest text-gray-400 select-none"> Playlist </span>
+          <div class="flex flex-col justify-center">
+            <span class="uppercase text-sm font-semibold tracking-widest text-gray-400 select-none"> Playlist </span>
 
-              <h1 class="text-5xl font-extrabold mt-1 select-none">
-                {{ musicState.CurrentState.value.CurrentPlaylist.path.split('/').pop() }}
-              </h1>
+            <h1 class="text-4xl sm:text-5xl font-extrabold mt-1 select-none">
+              {{ musicState.CurrentState.value.CurrentPlaylist.path.split('/').pop() }}
+            </h1>
+
+            <div class="flex gap-2 text-gray-300 text-sm mt-2 select-none">
+              <span>Songs: {{ (musicState.CurrentState.value.CurrentPlaylist || []).length }} </span>
             </div>
           </div>
         </div>
@@ -120,24 +120,21 @@ async function selectSong(path) {
 }
 
 async function selectFolder(path) {
-  await musicState.updateCurrentState(path);
+  if (path == musicState.CurrentState.value.CurrentPlaylist.path) return;
+  else {
+    await musicState.updateCurrentState(path);
+  }
 }
 
 const refreshApp = async () => {
   await window.electronAPI.refreshApp();
 };
-
-const cover = computed(() => {
-  const path = musicState.CurrentState.value.CurrentPlaylist.path;
-  const folder = musicState.SubFolders.value.find((f) => f.path === path);
-  return folder?.cover || null;
-});
 </script>
 
 <style scoped>
 section::-webkit-scrollbar {
-  width: 8px;
-  /*   display: none; */
+  /* width: 8px; */
+    display: none;
 }
 
 section::-webkit-scrollbar-track {
