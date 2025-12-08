@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { checkMusicFolder, loadSongs, getMp3Buffer, getFolders } from './utils/MusicStateSetup.js';
+import { checkMusicFolder, loadSongs, getMp3Buffer, getFolders, getFolderCover } from './utils/MusicStateSetup.js';
 
 if (started) app.quit();
 let mainWindow;
@@ -55,3 +55,4 @@ ipcMain.handle('refresh-app', () => {
   }
   return false;
 });
+ipcMain.handle('getFolderCover', (_, folderPath) => getFolderCover(folderPath));

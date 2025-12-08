@@ -7,22 +7,6 @@
     @timeupdate="onTimeUpdate"
     @loadedmetadata="onLoadedMetadata"></audio>
   <div class="w-screen h-24 bg-neutral-950 fixed bottom-0 border-t border-stone-800">
-    <div v-show="musicState.CurrentState.value.State" class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
-      <img :src="Icons.logo" class="w-16 h-auto rounded select-none" />
-      <span
-        v-if="musicState.CurrentState.value.CurrentSong.name"
-        class="truncate select-none whitespace-pre-line overflow-ellipsis w-[15vw]">
-        {{ musicState.CurrentState.value.CurrentSong.name }}
-        <template v-if="musicState.CurrentState.value.CurrentSong.artist">
-          <br />
-          <span class="text-sm text-gray-400">by {{ musicState.CurrentState.value.CurrentSong.artist }}</span>
-        </template>
-        <template v-else>
-          <br />
-          <span class="text-sm text-gray-400">by Unnamed Artist</span>
-        </template>
-      </span>
-    </div>
     <div class="flex items-center justify-center mt-4 pb-1 w-full px-4">
       <span class="text-white truncate text-right max-w-[20%] flex-grow pr-2 select-none">
         {{ !musicState.CurrentState.value.State ? '0:00' : formatTime(sliderValue) }}
@@ -49,66 +33,93 @@
         {{ musicState.CurrentState.value.CurrentSong.duration || '0:00' }}</span
       >
     </div>
-    <div class="flex justify-center items-stretch mb-2">
-      <button
-        :disabled="!musicState.CurrentState.value.CurrentSong.name"
-        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
-        class="w-8 h-12 mr-2 flex items-center justify-center"
-        @click.stop="musicState.toggleLoop()">
+    <div class="flex items-center mb-2 px-4 w-full">
+      <div class="flex items-center w-1/3">
+        <div v-show="musicState.CurrentState.value.State" class="text-white fixed left-2 bottom-4 flex items-center space-x-2">
+          <img :src="Icons.logo" class="w-16 h-auto rounded select-none" />
+          <span
+            v-if="musicState.CurrentState.value.CurrentSong.name"
+            class="truncate select-none whitespace-pre-line overflow-ellipsis w-[15vw]">
+            {{ musicState.CurrentState.value.CurrentSong.name }}
+            <template v-if="musicState.CurrentState.value.CurrentSong.artist">
+              <br />
+              <span class="text-sm text-gray-400">by {{ musicState.CurrentState.value.CurrentSong.artist }}</span>
+            </template>
+            <template v-else>
+              <br />
+              <span class="text-sm text-gray-400">by Unnamed Artist</span>
+            </template>
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center w-1/3">
+        <!-- Loop Button -->
+        <button
+          :disabled="!musicState.CurrentState.value.CurrentSong.name"
+          :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+          class="w-8 h-12 mr-2 flex items-center justify-center"
+          @click.stop="musicState.toggleLoop()">
+          <img
+            draggable="false"
+            :src="
+              musicState.loopMode.value === 0 ? Icons.notLoopIcon : musicState.loopMode.value === 1 ? Icons.loopIcon : Icons.loopSingleIcon
+            "
+            class="w-8 h-12 select-none" />
+        </button>
+        <!-- Previous Button -->
+        <button
+          :disabled="!musicState.CurrentState.value.CurrentSong.name"
+          :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+          class="w-12 h-12 mr-2 flex items-center justify-center"
+          @click="playPrevious">
+          <img draggable="false" :src="Icons.skipPreviousIcon" class="w-12 h-12 select-none" />
+        </button>
+        <!-- Playback Button -->
+        <button
+          :disabled="!musicState.CurrentState.value.CurrentSong.name"
+          :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+          class="w-12 h-12 flex items-center justify-center"
+          @click.stop="musicState.togglePlayback()">
+          <img draggable="false" :src="musicState.IsPlaying.value ? Icons.pauseIcon : Icons.playIcon" class="w-12 h-12 select-none" />
+        </button>
+        <!-- Skip Button -->
+        <button
+          :disabled="!musicState.CurrentState.value.CurrentSong.name"
+          :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+          class="w-12 h-12 ml-2 flex items-center justify-center"
+          @click="playNext()">
+          <img draggable="false" :src="Icons.skipNextIcon" class="w-12 h-12 select-none" />
+        </button>
+        <!-- Shuffle Button -->
+        <button
+          :disabled="!musicState.CurrentState.value.CurrentSong.name"
+          :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
+          class="w-8 h-12 ml-2 flex items-center justify-center"
+          @click.stop="musicState.toggleShuffle()">
+          <img
+            draggable="false"
+            :src="musicState.shuffleMode.value ? Icons.shuffleOnIcon : Icons.shuffleOffIcon"
+            class="w-8 h-12 select-none" />
+        </button>
+      </div>
+
+      <div v-show="musicState.CurrentState.value.State" class="flex items-center justify-end w-1/3 space-x-2 -mt-5">
         <img
           draggable="false"
-          :src="
-            musicState.loopMode.value === 0 ? Icons.notLoopIcon : musicState.loopMode.value === 1 ? Icons.loopIcon : Icons.loopSingleIcon
-          "
-          class="w-8 h-12 select-none" />
-      </button>
-
-      <button
-        :disabled="!musicState.CurrentState.value.CurrentSong.name"
-        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
-        class="w-12 h-12 mr-2 flex items-center justify-center"
-        @click="playPrevious">
-        <img draggable="false" :src="Icons.skipPreviousIcon" class="w-12 h-12 select-none" />
-      </button>
-
-      <button
-        :disabled="!musicState.CurrentState.value.CurrentSong.name"
-        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
-        class="w-12 h-12 flex items-center justify-center"
-        @click.stop="musicState.togglePlayback()">
-        <img draggable="false" :src="musicState.IsPlaying.value ? Icons.pauseIcon : Icons.playIcon" class="w-12 h-12 select-none" />
-      </button>
-
-      <button
-        :disabled="!musicState.CurrentState.value.CurrentSong.name"
-        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
-        class="w-12 h-12 ml-2 flex items-center justify-center"
-        @click="playNext()">
-        <img draggable="false" :src="Icons.skipNextIcon" class="w-12 h-12 select-none" />
-      </button>
-
-      <button
-        :disabled="!musicState.CurrentState.value.CurrentSong.name"
-        :class="!musicState.CurrentState.value.CurrentSong.name ? 'cursor-not-allowed' : 'cursor-pointer'"
-        class="w-8 h-12 ml-2 flex items-center justify-center"
-        @click.stop="musicState.toggleShuffle()">
-        <img
-          draggable="false"
-          :src="musicState.shuffleMode.value ? Icons.shuffleOnIcon : Icons.shuffleOffIcon"
-          class="w-8 h-12 select-none" />
-      </button>
-      <img draggable="false" :src="volume === 0 ? Icons.audioOff : Icons.audioOn" class="w-8 h-auto select-none" />
-      <VueSlider
-        v-model="volume"
-        class="mt-4 ml-2"
-        :min="0"
-        :max="100"
-        :height="4"
-        :dot-size="10"
-        :style="{ width: '20%' }"
-        :process-style="{ backgroundColor: '#ea580c' }"
-        :rail-style="{ backgroundColor: '#4B5563' }"
-        :tooltip="'none'" />
+          :src="volume === 0 ? Icons.audioOff : volume > 0 && volume <= 50 ? Icons.audioSM : Icons.audioLG"
+          class="w-8 h-auto select-none" />
+        <VueSlider
+          v-model="volume"
+          :min="0"
+          :max="100"
+          :height="6"
+          :dot-size="0"
+          :dot-style="{ backgroundColor: '#00ea580c', borderColor: '#00ea580c' }"
+          :style="{ width: '120px' }"
+          :process-style="{ backgroundColor: '#ea580c' }"
+          :rail-style="{ backgroundColor: '#4B5563' }"
+          tooltip="none" />
+      </div>
     </div>
   </div>
 </template>
@@ -116,15 +127,23 @@
 <script setup>
 import VueSlider from 'vue-3-slider-component';
 import Icons from '../composables/Icons.js';
-import { ref, inject } from 'vue';
+import { ref, inject, watch, onMounted } from 'vue';
 
 const dragging = ref(false);
 const hovering = ref(false);
 const sliderValue = ref(0);
-const volume = ref(20);
+const volume = ref(50);
 
 const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');
+
+onMounted(() => {
+  musicState.audioRef.value.volume = volume.value / 150;
+});
+
+watch(volume, (val) => {
+  if (musicState.audioRef.value) musicState.audioRef.value.volume = val / 150;
+});
 
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space' && musicState.CurrentState.value.State) {
@@ -166,7 +185,7 @@ async function playNext() {
 }
 
 async function playPrevious() {
-  if (musicState.audioRef.value.currentTime > 5 || musicState.loopMode.value == 0 || musicState.loopMode.value == 2) {
+  if (musicState.audioRef.value.currentTime > 5 || musicState.loopMode.value == 2) {
     musicState.audioRef.value.currentTime = 0;
   } else {
     let prevSong = await musicState.getPreviousSong();

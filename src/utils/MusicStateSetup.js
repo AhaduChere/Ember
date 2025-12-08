@@ -40,3 +40,14 @@ export function getFolders(folder) {
   const items = fs.readdirSync(folder, { withFileTypes: true });
   return items.filter((item) => item.isDirectory()).map((dir) => path.join(folder, dir.name));
 }
+
+export function getFolderCover(folderPath) {
+  const possible = ['cover.jpg', 'cover.png'];
+
+  for (const name of possible) {
+    const full = path.join(folderPath, name);
+    if (fs.existsSync(full)) return full;
+  }
+
+  return null;
+}

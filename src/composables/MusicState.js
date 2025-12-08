@@ -1,10 +1,10 @@
 import { ref } from 'vue';
 
 export class MusicState {
-  // Main Variables
   constructor() {
     this.MainFolder = ref({
       path: '',
+      songs: [],
     });
     this.SubFolders = ref([]);
     this.IsPlaying = ref(false);
@@ -19,12 +19,12 @@ export class MusicState {
     this.sliderValue = ref();
     this.audioRef = ref(null);
   }
-  // Finds systems Music folder
+
   async setupMainFolder() {
     this.MainFolder.value.path = await window.electronAPI.checkMusicFolder();
     this.MainFolder.value.songs = await window.electronAPI.loadSongs(this.MainFolder.value.path);
   }
-  // Finds Subfolders within Music folder for playlists
+
   async setupSubFolders() {
     const array = await window.electronAPI.getFolders(this.MainFolder.value.path);
     for (let i = 0; i < array.length; i++) {
@@ -86,12 +86,10 @@ export class MusicState {
     this.IsPlaying.value = !this.IsPlaying.value;
   }
 
-  // Method to get MP3 file loaded on frontend
   async getMP3() {
     const filepath = this.CurrentState.value.CurrentSong.path;
     const buffer = await window.electronAPI.getMp3Buffer(filepath);
     const blob = new Blob([buffer], { type: 'audio/mpeg' });
-    // clears blob to prevent memory leak
     if (this.audioSrc.value) {
       URL.revokeObjectURL(this.audioSrc.value);
     }
@@ -101,11 +99,9 @@ export class MusicState {
   async getNextSong() {
     if (this.shuffleMode.value == true) {
       const songs = this.CurrentState.value.CurrentPlaylist.songs;
-      // if playlist has only one song
       if (songs.length <= 1) return songs[0]?.path;
 
       let randomIndex;
-      // random index that isnt current song
       do {
         randomIndex = Math.floor(Math.random() * songs.length);
       } while (songs[randomIndex].path === this.CurrentState.value.CurrentSong.path);

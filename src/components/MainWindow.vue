@@ -37,6 +37,22 @@
       <section
         class="col-span-3 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
         :style="{ height: 'calc(100vh - 7rem)' }">
+        <div class="bg-[#1f1f1f] w-full rounded-xl p-8 flex items-end justify-between">
+          <div class="flex items-center gap-6">
+            <div class="w-36 h-36 bg-[#181818] rounded-md flex items-center justify-center shadow-xl overflow-hidden">
+              <span class="text-7xl text-[#ea580c] font-bold select-none">♪</span>
+            </div>
+
+            <div class="flex flex-col justify-start">
+              <span class="uppercase text-sm font-semibold tracking-widest text-gray-400 select-none"> Playlist </span>
+
+              <h1 class="text-5xl font-extrabold mt-1 select-none">
+                {{ musicState.CurrentState.value.CurrentPlaylist.path.split('/').pop() }}
+              </h1>
+            </div>
+          </div>
+        </div>
+
         <div
           v-for="song in musicState.CurrentState.value.CurrentPlaylist || []"
           :key="song.path"

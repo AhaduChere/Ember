@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getMp3Buffer: (filePath) => ipcRenderer.invoke('get-mp3-buffer', filePath),
   getFolders: (folder) => ipcRenderer.invoke('get-folders', folder),
   refreshApp: () => ipcRenderer.invoke('refresh-app'),
+  getFolderCover: (folderPath) => ipcRenderer.invoke('getFolderCover', folderPath),
 });
 
 import './composables/Icons.js';
