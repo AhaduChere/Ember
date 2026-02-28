@@ -29,7 +29,11 @@ export class MusicState {
     const array = await window.electronAPI.getFolders(this.MainFolder.value.path);
     for (let i = 0; i < array.length; i++) {
       const songs = await window.electronAPI.loadSongs(array[i]);
-      this.SubFolders.value.push({ path: array[i], songs: songs });
+      const coverPath = await window.electronAPI.getFolderCover(array[i]);
+      const buffer = await window.electronAPI.getFileBuffer(coverPath);
+      const blob = new Blob([buffer], { type: 'image/jpeg' });
+      const url = URL.createObjectURL(blob);
+      this.SubFolders.value.push({ path: array[i], songs, cover: url });
     }
   }
 

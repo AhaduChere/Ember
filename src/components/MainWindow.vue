@@ -9,22 +9,26 @@
           <p class="pt-0.5">Refresh</p>
         </button>
 
-        <div class="flex flex-col gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div
             v-for="folder in allFolders"
             :key="folder.path"
-            class="group bg-[#1f1f1f] rounded-xl cursor-pointer overflow-hidden transition-all shadow-md"
-            :class="[
-              musicState.CurrentState.value.CurrentPlaylist?.path === folder.path
-                ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]'
-                : '',
-            ]"
+            class="flex flex-col items-center cursor-pointer"
             @click.stop="selectFolder(folder.path)">
-            <div class="h-24 bg-[#1f1f1f] flex items-center justify-center">
-              <span class="text-9xl text-[#ea580c] font-bold select-none">♪</span>
+            <div
+              class="w-full max-w-40 h-40 bg-[#1f1f1f] rounded-xl overflow-hidden shadow-md flex items-center justify-center"
+              :class="[
+                musicState.CurrentState.value.CurrentPlaylist?.path === folder.path
+                  ? 'ring-2 ring-[#ea580c] ring-offset-2 ring-offset-[#121212]'
+                  : '',
+              ]">
+              <img v-if="folder.cover" :src="folder.cover" class="w-full h-full object-cover select-none" alt="cover" />
+              <img v-else :src="Icons.logo" class="w-2/3 mb-1" />
             </div>
-            <div class="p-4 text-center">
-              <span class="block text-base font-semibold truncate text-gray-200 select-none">
+            <div class="mt-3 text-center">
+              <span
+                class="block text-base font-bold truncate select-none"
+                :class="musicState.CurrentState.value.CurrentPlaylist?.path === folder.path ? 'text-[#ea580c]' : 'text-white'">
                 {{ folder.path.split('/').pop() }}
               </span>
             </div>
@@ -33,15 +37,15 @@
       </section>
 
       <section
-        class="flex-3 overflow-y-scroll px-6 pt-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
+        class="flex-3 overflow-y-scroll px-6 py-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-700"
         :style="{ height: 'calc(100vh - 7rem)' }">
         <div class="bg-[#1f1f1f] w-full rounded-xl p-6 flex items-center gap-6">
           <div class="w-36 h-36 bg-[#181818] rounded-md flex items-center justify-center shadow-lg overflow-hidden">
             <img
               v-if="musicState.CurrentState.value.CurrentPlaylist.cover"
               :src="musicState.CurrentState.value.CurrentPlaylist.cover"
-              class="w-full h-full object-cover" />
-            <span v-else class="text-6xl text-[#ea580c] font-bold select-none">♪</span>
+              class="w-full h-full object-cover select-none" />
+            <img v-else :src="Icons.logo" class="w-2/3 mb-1" />
           </div>
 
           <div class="flex flex-col justify-center">
@@ -134,7 +138,7 @@ const refreshApp = async () => {
 <style scoped>
 section::-webkit-scrollbar {
   /* width: 8px; */
-    display: none;
+  display: none;
 }
 
 section::-webkit-scrollbar-track {

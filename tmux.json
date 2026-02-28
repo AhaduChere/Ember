@@ -1,0 +1,26 @@
+{
+  "session_name": "Ember",
+  "windows": [
+    {
+      "window_name": "Dev",
+      "layout": "even-horizontal",
+      "panes": [
+        {
+          "shell_command": ["cd src && nvim components/MainWindow.vue components/MusicPlayer.vue"],
+          "focus": true
+        },
+        {
+          "shell_command": ["nvim src/composables/MusicState.js src/utils/MusicStateSetup.js src/main.js"]
+        }
+      ]
+    },
+    {
+      "window_name": "Server",
+      "panes": [
+        {
+          "shell_command": ["npm run dev"]
+        }
+      ]
+    }
+  ]
+}

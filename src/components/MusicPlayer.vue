@@ -138,11 +138,11 @@ const musicState = inject('musicState');
 if (!musicState) throw new Error('MusicState not provided!');
 
 onMounted(() => {
-  musicState.audioRef.value.volume = volume.value / 150;
+  musicState.audioRef.value.volume = volume.value / 100;
 });
 
 watch(volume, (val) => {
-  if (musicState.audioRef.value) musicState.audioRef.value.volume = val / 150;
+  if (musicState.audioRef.value) musicState.audioRef.value.volume = val;
 });
 
 window.addEventListener('keydown', (e) => {
