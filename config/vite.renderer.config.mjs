@@ -4,6 +4,7 @@ import Components from "unplugin-vue-components/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  base: "./",
   plugins: [
     vue(),
     tailwindcss(),
