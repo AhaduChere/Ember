@@ -142,7 +142,7 @@ onMounted(() => {
 });
 
 watch(volume, (val) => {
-  if (musicState.audioRef.value) musicState.audioRef.value.volume = val;
+  if (musicState.audioRef.value) musicState.audioRef.value.volume = val / 100;
 });
 
 window.addEventListener('keydown', (e) => {
