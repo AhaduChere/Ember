@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/assets/Icon.svg" alt="Ember Logo" width="150">
+  <img src="src/assets/Icon.svg" alt="Ember Logo" width="100">
 </p>
 <h1 align="center">Ember</h1>
 <p align="center"><em>A local file music player I built for practice</em></p>
